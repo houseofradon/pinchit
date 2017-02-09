@@ -1,2 +1,4 @@
-import Module from '../src/';
-console.log(Module);
+import pinchIt from '../src/';
+
+const pinch = pinchIt('img');
+console.log(pinch);

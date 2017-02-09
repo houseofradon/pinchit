@@ -1,7 +1,7 @@
 {
-  "name": "",
+  "name": "pinchit",
   "version": "1.0.0",
-  "description": "",
+  "description": "Zoom images without dependencies",
   "keywords": [],
   "main": "lib/index.js",
   "scripts": {
