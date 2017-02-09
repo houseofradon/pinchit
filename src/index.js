@@ -2,29 +2,49 @@
 const pinchIt = () => {
   // private variable cache
 
-  let elements;         // element to scroll to                   (node)
-  let scaling;         // element to scroll to                   (node)
+  let elements;
+  let scaling;
+  let firstMove;
+  let firstTouch;
 
-  const calcDist = (e) => (
-    Math.sqrt(
-      ((e.touches[0].x - e.touches[1].x) * (e.touches[0].x - e.touches[1].x)) +
-      ((e.touches[0].y - e.touches[1].y) * (e.touches[0].y - e.touches[1].y))
-    )
+  const cancelEvent = (e) => {
+    e.stopPropagation();
+    e.preventDefault();
+  };
+
+  const calcDist = (touches) => {
+    console.log(touches);
+    const [first, second] = touches;
+    return Math.sqrt(
+      ((first.pageX - second.pageX) * (first.pageX - second.pageX)) +
+      ((first.pageY - second.pageY) * (first.pageY - second.pageY))
+    );
+  };
+
+  const calcScale = (startTouch, endTouch) => (
+    calcDist(endTouch) / calcDist(startTouch)
   );
 
   const attachEvents = (el) => {
     el.addEventListener('touchstart', (e) => {
-      console.log(e.touches);
       scaling = (e.touches.length === 2);
+      firstMove = true;
     });
 
     el.addEventListener('touchmove', (e) => {
-      if (scaling) {
-        console.log('scaling');
+      const { target } = e;
+      if (scaling && !firstTouch) {
+        firstTouch = Array.from(e.touches);
       }
+      if (scaling && firstTouch) {
+        cancelEvent(e);
+        const scale = calcScale(firstTouch, Array.from(e.touches));
+        target.style.transform = `scale(${scale})`;
+      }
+      firstMove = false;
     });
 
-    el.addEventListener('touchend', (e) => {
+    el.addEventListener('touchend', () => {
       scaling = false;
     });
   };
@@ -47,10 +67,7 @@ const pinchIt = () => {
     }
 
     elements.forEach(attachEvents);
-
   };
-
-
 
   return pinch;
 };
