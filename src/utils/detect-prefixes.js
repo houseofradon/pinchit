@@ -1,50 +1,48 @@
 /**
  * Detecting prefixes for saving time and bytes
  */
-export default function detectPrefixes () {
-    let transform;
-    let transition;
-    let transitionEnd;
-    let hasScale3d;
+export default () => {
+  let transform;
+  let transition;
+  let transitionEnd;
+  let hasScale3d;
 
-    (function () {
-        let el = document.createElement('_');
-        let style = el.style;
+  (() => {
+    const el = document.createElement('_');
+    const style = el.style;
 
-        let prop;
+    if (style.webkitTransition === '') {
+      transitionEnd = 'webkitTransitionEnd';
+      transition = 'webkitTransition';
+    }
 
-        if (style[prop = 'webkitTransition'] === '') {
-            transitionEnd = 'webkitTransitionEnd';
-            transition = prop;
-        }
+    if (style.transition === '') {
+      transitionEnd = 'transitionend';
+      transition = 'transition';
+    }
 
-        if (style[prop = 'transition'] === '') {
-            transitionEnd = 'transitionend';
-            transition = prop;
-        }
+    if (style.webkitTransform === '') {
+      transform = 'webkitTransform';
+    }
 
-        if (style[prop = 'webkitTransform'] === '') {
-            transform = prop;
-        }
+    if (style.msTransform === '') {
+      transform = 'msTransform';
+    }
 
-        if (style[prop = 'msTransform'] === '') {
-            transform = prop;
-        }
+    if (style.transform === '') {
+      transform = 'transform';
+    }
 
-        if (style[prop = 'transform'] === '') {
-            transform = prop;
-        }
+    document.body.insertBefore(el, null);
+    style[transform] = 'translate3d(0, 0, 0)';
+    hasScale3d = !!global.getComputedStyle(el).getPropertyValue(transform);
+    document.body.removeChild(el);
+  })();
 
-        document.body.insertBefore(el, null);
-        style[transform] = 'translate3d(0, 0, 0)';
-        hasScale3d = !!global.getComputedStyle(el).getPropertyValue(transform);
-        document.body.removeChild(el);
-    }());
-
-    return {
-        transform,
-        transition,
-        transitionEnd,
-        hasScale3d
-    };
-}
+  return {
+    transform,
+    transition,
+    transitionEnd,
+    hasScale3d
+  };
+};
