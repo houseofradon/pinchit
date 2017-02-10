@@ -1,3 +1,4 @@
+import detectPrefixes from './utils/detect-prefixes';
 import dispatchEvent from './utils/dispatch-event';
 import defaults from './defaults';
 
@@ -6,6 +7,7 @@ const pinchIt = (target, options = {}) => {
   let elements;
   let scaling;
   let firstTouch;
+  let prefixes;
 
   const dispatchPinchEvent = (phase, type, detail) => {
     dispatchEvent(elements, `${phase}.pinch.${type}`, detail);
@@ -43,16 +45,36 @@ const pinchIt = (target, options = {}) => {
   );
 
   /**
+   * translates to a given position in a given time in milliseconds
+   *
+   * @to        {number} number in pixels where to translate to
+   * @duration  {number} time in milliseconds for the transistion
+   * @ease      {string} easing css property
+   */
+  const scaleElem = (element, to, duration, ease) => {
+    const style = element && element.style;
+    const { transition, transform, hasScale3d } = prefixes;
+    if (!style) return;
+
+    style[`${transition}TimingFunction`] = ease;
+    style[`${transition}Duration`] = `${duration}ms`;
+    style[transform] = (hasScale3d)
+      ? `scale3d(${to}, ${to}, 0)`
+      : `scale(${to}, ${to})`;
+  };
+
+  /**
    * Set scaling if we are using more then one finger
    * and captures our first punch point
    */
   const onTouchstart = (e) => {
     scaling = (e.touches.length === 2);
-
     firstTouch = Array.from(e.touches);
 
+    cancelEvent(e);
     // Disable aniamtion so we can pinch
     // Set our initial starting point for our pinch
+    scaleElem(e.target, 1, 0, 'easing');
 
     dispatchPinchEvent('on', 'touchstart', {
       event
@@ -60,19 +82,22 @@ const pinchIt = (target, options = {}) => {
   };
 
   const onTouchmove = (e) => {
-    if (scaling && firstTouch) {
-      // dont bubble touch event
-      cancelEvent(e);
-      const scale = calcScale(firstTouch, Array.from(e.touches));
-      e.target.style.transform = `scale(${scale})`;
-    }
+    if (!scaling || !firstTouch) return;
+    dispatchPinchEvent('before', 'touchmove');
+
+    // dont bubble touch event
+    cancelEvent(e);
+    scaleElem(e.target, calcScale(firstTouch, Array.from(e.touches)), 0);
+
+    dispatchPinchEvent('after', 'touchmove');
   };
 
-  const onTouchend = () => {
+  const onTouchend = (e) => {
     firstTouch = null;
     // 1. Enable aniamtion
     // 2. Calculate if we new scale is between max and min values
     // 3. Otherwise return to number and use the current easing
+    scaleElem(e.target, 1, 300, 'easing');
   };
 
   const attachEvents = (el) => {
@@ -89,8 +114,10 @@ const pinchIt = (target, options = {}) => {
 
   const setup = (target, options) => {
     dispatchPinchEvent('before', 'init');
+
     // Base configuration for the pinch instance
     const opts = {...defaults, ...options};
+    prefixes = detectPrefixes();
 
     // resolve target
     switch (typeof target) {
@@ -103,8 +130,8 @@ const pinchIt = (target, options = {}) => {
       default:
         console.warn('missing target, either pass an node or a string');
     }
-
     Array.from(elements).forEach(attachEvents);
+
     dispatchPinchEvent('after', 'init');
   };
 
