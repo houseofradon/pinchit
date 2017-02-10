@@ -3,13 +3,13 @@ export default {
    * max scale a node can reach
    * @maxPinch {Number}
    */
-  maxPinch: 3,
+  maxPinch: 2.3,
 
   /**
    * min scale a node can reach
    * @minPinch {Number}
    */
-  minPinch: 300,
+  minPinch: 0.8,
 
   /**
    * time for the snapBack of the pinch if the node has reach above
