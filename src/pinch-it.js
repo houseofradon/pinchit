@@ -2,14 +2,14 @@
 
 import detectPrefixes from './utils/detect-prefixes';
 import dispatchEvent from './utils/dispatch-event';
-import { isWithin, calcScale } from './utils/pinch';
+import { isWithin, calcScale, calcNewScale, getScale } from './utils/pinch';
 import defaults from './defaults';
-
 
 const pinchIt = (target, options = {}) => {
   // private variable cache
   let elements;
   let scaling;
+  let lastScale;
   let firstTouch;
   let lastTouch;
 
@@ -48,15 +48,17 @@ const pinchIt = (target, options = {}) => {
    * @return { viud }
    */
   const scaleEl = (el, to: number, duration: number, ease: string): void => {
-    const style = el && el.style;
     const { transition, transform, hasScale3d } = prefixes;
-    if (!style) return;
+    const { style } = el;
+    // Base our new dimention on our prevous value minus our base value
+
+    const scaleProp = (hasScale3d)
+      ? `scale3d(${to}, ${to}, 1)`
+      : `scale(${to}, ${to})`;
 
     style[`${transition}TimingFunction`] = ease;
     style[`${transition}Duration`] = `${duration}ms`;
-    style[transform] = (hasScale3d)
-      ? `scale3d(${to}, ${to}, 1)`
-      : `scale(${to}, ${to})`;
+    style[transform] = scaleProp;
   };
 
   // event handling
@@ -67,17 +69,16 @@ const pinchIt = (target, options = {}) => {
    * private
    * @param { Object } e the event from our eventlistener
    */
-  const onTouchstart = ({ease}) => (e: Event) => {
+  const onTouchstart = (/* opt */) => (e: Event) => {
     scaling = (e.touches.length === 2);
     firstTouch = Array.from(e.touches);
+
     cancelEvent(e);
     // Disable aniamtion so we can pinch
     // Set our initial starting point for our pinch
-    scaleEl(e.target, 1, 0, ease);
+    // scaleEl(e.target, 1, 0, ease);
 
-    dispatchPinchEvent('on', 'touchstart', {
-      e
-    });
+    dispatchPinchEvent('on', 'touchstart', { e });
   };
 
   const onTouchmove = ({ease}) => (e: Event) => {
@@ -88,19 +89,24 @@ const pinchIt = (target, options = {}) => {
     cancelEvent(e);
 
     lastTouch = Array.from(e.touches);
-    scaleEl(e.target, calcScale(firstTouch, lastTouch), 0, ease);
+    const scale = calcNewScale(calcScale(firstTouch, lastTouch), lastScale);
+    scaleEl(e.target, scale, 0, ease);
 
     dispatchPinchEvent('after', 'touchmove');
   };
 
   const onTouchend = opts => (e: Event) => {
-    const scale = calcScale(firstTouch, lastTouch);
+    if (!firstTouch || !lastTouch) return;
+    const scale = calcNewScale(calcScale(firstTouch, lastTouch), lastScale);
 
+    lastScale = getScale(e.target);
     firstTouch = null;
     lastTouch = null;
 
     if (!isWithin(scale, opts)) {
-      scaleEl(e.target, 1, opts.snapBackSpeed, opts.ease);
+      const isLessThan = (scale < opts.minScale);
+      lastScale = isLessThan ? opts.minScale : opts.maxScale;
+      scaleEl(e.target, lastScale, lastScale, opts.snapBackSpeed, opts.ease);
     }
   };
 
