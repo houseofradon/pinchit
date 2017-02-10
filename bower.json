@@ -1,0 +1,31 @@
+{
+  "name": "pinchit",
+  "description": "Zoom images without dependencies",
+  "main": "dist/index.js",
+  "authors": [
+    "Philip Knape"
+  ],
+  "license": "MIT",
+  "homepage": "https://github.com/Knape/pinchit",
+  "private": true,
+  "moduleType": [
+    "amd",
+    "node"
+  ],
+  "keywords": [
+    "pinch",
+    "zoom",
+    "image",
+    "touch",
+    "JavaScript",
+    "Vanilla",
+    "lean"
+],
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}
