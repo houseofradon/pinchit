@@ -2,7 +2,9 @@
 
 import detectPrefixes from './utils/detect-prefixes';
 import dispatchEvent from './utils/dispatch-event';
+import { isWidtin, calcScale } from './utils/pinch';
 import defaults from './defaults';
+
 
 const pinchIt = (target, options = {}) => {
   // private variable cache
@@ -35,37 +37,6 @@ const pinchIt = (target, options = {}) => {
     e.stopPropagation();
     e.preventDefault();
   };
-
-  /**
-   * calcDist - Calculate the distance between our fingers
-   *
-   * @param { Array } touches touches passas an array from TouchList
-   * @return { Number } the calcualted distance between the fingers
-   *
-   **/
-  const calcDist = (touches): number => {
-    const [first, second] = touches;
-    return Math.sqrt(
-      ((first.pageX - second.pageX) * (first.pageX - second.pageX)) +
-      ((first.pageY - second.pageY) * (first.pageY - second.pageY))
-    );
-  };
-
-  const isWidtin = (scale: number, {minPinch, maxPinch}): boolean => {
-    return (scale > minPinch) && (scale < maxPinch);
-  };
-
-  /**
-   * calcScale - Calculate the distance between where we start our pinch
-   * to where we end it
-   *
-   * @param { Array } startTouch The starting point of our touch
-   * @param { Array } endTouch The current point of our touch
-   * @return { Number }
-   */
-  const calcScale = (startTouch, endTouch): number => (
-    calcDist(endTouch) / calcDist(startTouch)
-  );
 
   /**
    * scaleEl -translates to a given position in a given time in milliseconds
