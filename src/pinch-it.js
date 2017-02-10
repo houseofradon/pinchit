@@ -121,7 +121,7 @@ const pinchIt = (target, options = {}) => {
    * public
    * reset function:
    * @param { Number } duration
-   * * @param { String } easing
+   * @param { String } easing
    * @return { void }
    */
   const reset = (duration: number, easing: string): void => {
