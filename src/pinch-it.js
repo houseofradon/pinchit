@@ -70,7 +70,6 @@ const pinchIt = (target, options = {}) => {
   const onTouchstart = ({ease}) => (e: Event) => {
     scaling = (e.touches.length === 2);
     firstTouch = Array.from(e.touches);
-    console.log(firstTouch);
     cancelEvent(e);
     // Disable aniamtion so we can pinch
     // Set our initial starting point for our pinch
