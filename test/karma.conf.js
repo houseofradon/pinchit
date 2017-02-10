@@ -9,13 +9,15 @@ module.exports = (config) => {
 
     // frameworks to use
     // available frameworks: https://npmjs.org/browse/keyword/karma-adapter
-    frameworks: ['mocha', 'chai', 'sinon'],
+    frameworks: ['mocha', 'chai', 'sinon', 'fixture'],
 
     // list of files / patterns to load in the browser
     files: [{
       pattern: 'test/specs/*.js',
       included: true,
       watched: !process.env.TRAVIS
+    }, {
+      pattern: 'test/*.html'
     }],
 
     // list of files to exclude
@@ -29,6 +31,7 @@ module.exports = (config) => {
     // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
     preprocessors: {
       'test/**/*.js': ['webpack', 'sourcemap'],
+      'test/*.html': ['html2js'],
     },
 
     webpack: {
@@ -40,6 +43,13 @@ module.exports = (config) => {
             loader: 'babel-loader',
           }],
           include: /src|test|demo/,
+        }, {
+          test: /\.js$/,
+          include: /src/,
+          use: [{
+            loader: 'istanbul-instrumenter-loader',
+          }],
+          enforce: 'post'
         }]
       },
     },
@@ -51,6 +61,8 @@ module.exports = (config) => {
       'karma-chai',
       'karma-sinon',
       'karma-sourcemap-loader',
+      'karma-fixture',
+      'karma-html2js-preprocessor',
       'karma-chrome-launcher',
       'karma-firefox-launcher',
       'istanbul-instrumenter-loader',
