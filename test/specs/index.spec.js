@@ -1,34 +1,69 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import Module from '../../src';
-import { mount } from 'enzyme';
+/* globals it, describe, before, beforeEach, expect, sinon */
+import pinchit from '../../src/';
+let spy;
 
-  before(() => {
-    document.body.style.margin = '100px';
-    document.body.style.padding = '100px';
+describe('pinchit()', () => {
+  beforeEach(function() {
+    sinon.spy(console, 'warn');
   });
 
-  let div;
-
-  beforeEach(() => {
-    div = document.createElement('div');
-    document.body.appendChild(div);
+  afterEach(function() {
+    console.warn.restore();
   });
 
-  afterEach(() => {
-    ReactDOM.unmountComponentAtNode(div);
-    div.parentNode.removeChild(div);
-    window.scrollTo(0, 0);
+  it('has to be a function', () => {
+    expect(typeof pinchit).to.eql('function');
   });
 
+  it('has to return an object', () => {
+    expect(typeof pinchit('img')).to.eql('object');
+  });
 
-  describe('Module', () => {
-    it('Should just pass for now', () => {
-      expect(true).to.eql(true);
+  describe('.setup()', () => {
+    it('has to be a function', () => {
+      const pinch = pinchit('img');
+      expect(typeof pinch.setup).to.eql('function');
+    });
+
+    it('allows to pass a string as first argument', () => {
+      const pinch = pinchit('img');
+      expect(console.warn).not.to.have.been.called;
+    });
+
+    it('allows to pass an node as first argument', () => {
+      expect(console.warn).not.to.have.been.called;
+    });
+
+    it('otherwise it should warn', () => {
+      pinchit();
+      expect(console.warn).to.have.been.called;
     });
   });
 
+  describe('.reset()', () => {
+    it('has to be a function', () => {});
+  });
 
-  // it('Component should have length of 2', () => {
-  //     expect(wrapper.find('div').children().length).to.have.length(2)
-  // })
+  describe('.destroy()', () => {
+    it('has to be a function', () => {});
+  });
+
+  describe('pinch', () => {
+    describe('onTouchstart', () => {
+      it('pinchit should set style to element', () => {});
+      it('pinchit should fire events', () => {});
+    });
+
+    describe('onTouchmove', () => {
+      it('pinchit should set style to element', () => {});
+      it('pinchit should fire events', () => {});
+    });
+
+    describe('onTouchend', () => {
+      it('pinchit should set style to element', () => {});
+      it('should return if smaller then min value', () => {});
+      it('should return if smaller then max value', () => {});
+      it('pinchit should fire events', () => {});
+    });
+  });
+});

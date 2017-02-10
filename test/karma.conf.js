@@ -9,12 +9,14 @@ module.exports = (config) => {
 
     // frameworks to use
     // available frameworks: https://npmjs.org/browse/keyword/karma-adapter
-    frameworks: ['mocha', 'chai'],
+    frameworks: ['mocha', 'chai', 'sinon'],
 
     // list of files / patterns to load in the browser
-    files: [
-      { pattern: 'test/specs/*.js', included: true, watched: !process.env.TRAVIS },
-    ],
+    files: [{
+      pattern: 'test/specs/*.js',
+      included: true,
+      watched: !process.env.TRAVIS
+    }],
 
     // list of files to exclude
     exclude: [
@@ -32,27 +34,14 @@ module.exports = (config) => {
     webpack: {
       devtool: 'inline-source-map',
       module: {
-        loaders: [{
-          test: /\.js$/,
+        rules: [{
+          test: /\.jsx?$/,
+          use: [{
+            loader: 'babel-loader',
+          }],
           include: /src|test|demo/,
-          query: {
-            presets: ['stage-3', 'es2015', 'react'],
-            plugins: []
-          },
-          loader: 'babel'
-        }],
-        postLoaders: [{
-          test: /\.js$/,
-          include: /src/,
-          loader: 'istanbul-instrumenter'
         }]
       },
-      externals: {
-        cheerio: 'window',
-        'react/addons': true,
-        'react/lib/ExecutionEnvironment': true,
-        'react/lib/ReactContext': true
-      }
     },
 
     plugins: [
@@ -60,6 +49,7 @@ module.exports = (config) => {
       'karma-mocha',
       'karma-coverage',
       'karma-chai',
+      'karma-sinon',
       'karma-sourcemap-loader',
       'karma-chrome-launcher',
       'karma-firefox-launcher',
@@ -86,7 +76,6 @@ module.exports = (config) => {
 
     // web server port
     port: 9876,
-
 
     // enable / disable colors in the output (reporters and logs)
     colors: true,
