@@ -1,15 +1,22 @@
 export default {
+
+  /**
+   * default scale that will be set on element
+   * @maxPinch {Number}
+   */
+  baseScale: 1,
+
   /**
    * max scale a node can reach
    * @maxPinch {Number}
    */
-  maxPinch: 2.3,
+  maxScale: 3,
 
   /**
    * min scale a node can reach
    * @minPinch {Number}
    */
-  minPinch: 0.8,
+  minScale: 1,
 
   /**
    * time for the snapBack of the pinch if the node has reach above
