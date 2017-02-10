@@ -2,7 +2,7 @@
 
 import detectPrefixes from './utils/detect-prefixes';
 import dispatchEvent from './utils/dispatch-event';
-import { isWidtin, calcScale } from './utils/pinch';
+import { isWithin, calcScale } from './utils/pinch';
 import defaults from './defaults';
 
 
@@ -100,7 +100,7 @@ const pinchIt = (target, options = {}) => {
     firstTouch = null;
     lastTouch = null;
 
-    if (!isWidtin(scale, opts)) {
+    if (!isWithin(scale, opts)) {
       scaleEl(e.target, 1, opts.snapBackSpeed, opts.ease);
     }
   };

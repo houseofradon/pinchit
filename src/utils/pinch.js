@@ -16,14 +16,15 @@ export const calcDist = (touches): number => {
 };
 
 /**
- * isWidtin - Check if value is between two values
+ *
+isWithin - Check if value is between two values
  *
  * @param { Number } scale current scale value
  * @param { Object } minPinch, maxPinh
  * @return { Boolean }
  *
  **/
-export const isWidtin = (scale: number, {minPinch, maxPinch}): boolean => {
+export const isWithin = (scale: number, {minPinch, maxPinch}): boolean => {
   return (scale > minPinch) && (scale < maxPinch);
 };
 
