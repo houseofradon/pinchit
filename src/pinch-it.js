@@ -1,3 +1,5 @@
+// @flow
+
 import detectPrefixes from './utils/detect-prefixes';
 import dispatchEvent from './utils/dispatch-event';
 import defaults from './defaults';
@@ -7,28 +9,41 @@ const pinchIt = (target, options = {}) => {
   let elements;
   let scaling;
   let firstTouch;
-  let prefixes;
+  let lastTouch;
 
-  const dispatchPinchEvent = (phase, type, detail) => {
-    dispatchEvent(elements, `${phase}.pinch.${type}`, detail);
+  const prefixes = detectPrefixes();
+
+ /**
+  *  dispatchPinchEvent - Shorthand method for creating events
+  *
+  *  @param { String } phase
+  *  @param { String } type
+  *  @param { Object } details
+  *  @return { void } false
+  **/
+  const dispatchPinchEvent = (phase: string, type: string): void => {
+    dispatchEvent(elements, `${phase}.pinch.${type}`);
   };
 
-  /*
-  *  Cancel Events so we dont bubble up our events to the document
-  */
-  const cancelEvent = (e) => {
+ /**
+  *  cancelEvent - Cancel Events so we dont bubble up our events to the document
+  *
+  *  @param { Object } event
+  *  @return { void }
+  **/
+  const cancelEvent = (e: Event): void => {
     e.stopPropagation();
     e.preventDefault();
   };
 
   /**
-   * Pythagorean theorem:
-   * Calculate the distance between our fingers
-   * @param touces - Array of each value from Touchlist
-   * @return Number
+   * calcDist - Calculate the distance between our fingers
+   *
+   * @param { Array } touches touches passas an array from TouchList
+   * @return { Number } the calcualted distance between the fingers
    *
    **/
-  const calcDist = (touches) => {
+  const calcDist = (touches): number => {
     const [first, second] = touches;
     return Math.sqrt(
       ((first.pageX - second.pageX) * (first.pageX - second.pageX)) +
@@ -36,123 +51,162 @@ const pinchIt = (target, options = {}) => {
     );
   };
 
+  const isWidtin = (scale: number, {minPinch, maxPinch}): boolean => {
+    return (scale > minPinch) && (scale < maxPinch);
+  };
+
   /**
-   * Calculate the distance between where we start our pinch
+   * calcScale - Calculate the distance between where we start our pinch
    * to where we end it
+   *
+   * @param { Array } startTouch The starting point of our touch
+   * @param { Array } endTouch The current point of our touch
+   * @return { Number }
    */
-  const calcScale = (startTouch, endTouch) => (
+  const calcScale = (startTouch, endTouch): number => (
     calcDist(endTouch) / calcDist(startTouch)
   );
 
   /**
-   * translates to a given position in a given time in milliseconds
+   * scaleEl -translates to a given position in a given time in milliseconds
    *
-   * @to        {number} number in pixels where to translate to
-   * @duration  {number} time in milliseconds for the transistion
-   * @ease      {string} easing css property
+   * @param { Object } element element from the events
+   * @param { Number } number in pixels where to translate to
+   * @param { Number } duration time in milliseconds for the transistion
+   * @param { String } ease easing css property
+   * @return { viud }
    */
-  const scaleElem = (element, to, duration, ease) => {
-    const style = element && element.style;
+  const scaleEl = (el, to: number, duration: number, ease: string): void => {
+    const style = el && el.style;
     const { transition, transform, hasScale3d } = prefixes;
     if (!style) return;
 
     style[`${transition}TimingFunction`] = ease;
     style[`${transition}Duration`] = `${duration}ms`;
     style[transform] = (hasScale3d)
-      ? `scale3d(${to}, ${to}, 0)`
+      ? `scale3d(${to}, ${to}, 1)`
       : `scale(${to}, ${to})`;
   };
+
+  // event handling
 
   /**
    * Set scaling if we are using more then one finger
    * and captures our first punch point
+   * private
+   * @param { Object } e the event from our eventlistener
    */
-  const onTouchstart = (e) => {
+  const onTouchstart = ({ease}) => (e: Event) => {
     scaling = (e.touches.length === 2);
     firstTouch = Array.from(e.touches);
 
     cancelEvent(e);
     // Disable aniamtion so we can pinch
     // Set our initial starting point for our pinch
-    scaleElem(e.target, 1, 0, 'easing');
+    scaleEl(e.target, 1, 0, ease);
 
     dispatchPinchEvent('on', 'touchstart', {
       event
     });
   };
 
-  const onTouchmove = (e) => {
+  const onTouchmove = ({ease}) => (e: Event) => {
     if (!scaling || !firstTouch) return;
     dispatchPinchEvent('before', 'touchmove');
 
     // dont bubble touch event
     cancelEvent(e);
-    scaleElem(e.target, calcScale(firstTouch, Array.from(e.touches)), 0);
+
+    lastTouch = Array.from(e.touches);
+    scaleEl(e.target, calcScale(firstTouch, lastTouch), 0, ease);
 
     dispatchPinchEvent('after', 'touchmove');
   };
 
-  const onTouchend = (e) => {
+  const onTouchend = opts => (e: Event) => {
+    const scale = calcScale(firstTouch, lastTouch);
+
     firstTouch = null;
-    // 1. Enable aniamtion
-    // 2. Calculate if we new scale is between max and min values
-    // 3. Otherwise return to number and use the current easing
-    scaleElem(e.target, 1, 300, 'easing');
+    lastTouch = null;
+
+    if (!isWidtin(scale, opts)) {
+      scaleEl(e.target, 1, opts.snapBackSpeed, opts.ease);
+    }
   };
 
-  const attachEvents = (el) => {
-    el.addEventListener('touchstart', onTouchstart);
-    el.addEventListener('touchmove', onTouchmove);
-    el.addEventListener('touchend', onTouchend);
+  const attachEvents = opts => (el: Object) => {
+    el.addEventListener('touchstart', onTouchstart(opts));
+    el.addEventListener('touchmove', onTouchmove(opts));
+    el.addEventListener('touchend', onTouchend(opts));
   };
 
-  const detachhEvents = (el) => {
+  const detachhEvents = (el: Object) => {
     el.removeEventListener('touchstart', onTouchstart);
     el.removeEventListener('touchmove', onTouchmove);
     el.removeEventListener('touchend', onTouchend);
   };
 
-  const setup = (target, options) => {
+  /**
+   * public
+   * reset function:
+   * @param { Number } duration
+   * * @param { String } easing
+   * @return { void }
+   */
+  const reset = (duration: number, easing: string): void => {
+    Array.from(elements).forEach(el => scaleEl(el, 1, duration, easing));
+  };
+
+  /**
+   * public
+   * destroy function: called to gracefully destroy the lory instance
+   * @return { void }
+   */
+  const destroy = (): void => {
+    dispatchPinchEvent('before', 'destroy');
+    // remove event listeners
+    Array.from(elements).forEach(detachhEvents);
+    dispatchPinchEvent('after', 'destroy');
+  };
+
+  /**
+   * setup - Init function
+   *
+   * @param { String, Object }
+   * @return { void }
+   **/
+
+  type Options = {
+    maxPinch?: number;
+    minPinch?: number;
+    snapBackSpeed?: number;
+    ease?: string;
+  };
+
+  const setup = (target: string, opt: Options): void => {
+    if (elements) destroy();
     dispatchPinchEvent('before', 'init');
 
     // Base configuration for the pinch instance
-    const opts = {...defaults, ...options};
-    prefixes = detectPrefixes();
+    const opts = {...defaults, ...opt};
 
     // resolve target
+    // pinchit allows for both a node or a string to be passed
     switch (typeof target) {
       case 'object':
-        elements = target;
+        elements = Array.isArray(target) ? target : [target];
         break;
       case 'string':
         elements = document.querySelectorAll(target);
         break;
       default:
+        elements = [];
         console.warn('missing target, either pass an node or a string');
     }
-    Array.from(elements).forEach(attachEvents);
+
+    Array.from(elements).forEach(attachEvents(opts));
 
     dispatchPinchEvent('after', 'init');
-  };
-
-  /**
-   * public
-   * reset function:
-   */
-  const reset = () => {
-
-  };
-
-
-  /**
-   * public
-   * destroy function: called to gracefully destroy the lory instance
-   */
-  const destroy = () => {
-    dispatchPinchEvent('before', 'destroy');
-    // remove event listeners
-    Array.from(elements).forEach(detachhEvents);
-    dispatchPinchEvent('after', 'destroy');
   };
 
   // trigger initial setup
