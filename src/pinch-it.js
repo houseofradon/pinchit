@@ -21,7 +21,7 @@ const pinchIt = (target, options = {}) => {
   *  @param { String } phase
   *  @param { String } type
   *  @param { Object } details
-  *  @return { void } false
+  *  @return { Void }
   **/
   const dispatchPinchEvent = (phase: string, type: string): void => {
     dispatchEvent(elements, `${phase}.pinch.${type}`);
@@ -31,7 +31,7 @@ const pinchIt = (target, options = {}) => {
   *  cancelEvent - Cancel Events so we dont bubble up our events to the document
   *
   *  @param { Object } event
-  *  @return { void }
+  *  @return { Void }
   **/
   const cancelEvent = (e: Event): void => {
     e.stopPropagation();
@@ -45,7 +45,7 @@ const pinchIt = (target, options = {}) => {
    * @param { Number } number in pixels where to translate to
    * @param { Number } duration time in milliseconds for the transistion
    * @param { String } ease easing css property
-   * @return { viud }
+   * @return { Void }
    */
   const scaleEl = (el, to: number, duration: number, ease: string): void => {
     const { transition, transform, hasScale3d } = prefixes;
@@ -66,6 +66,7 @@ const pinchIt = (target, options = {}) => {
   /**
    * Set scaling if we are using more then one finger
    * and captures our first punch point
+   *
    * private
    * @param { Object } e the event from our eventlistener
    */
@@ -127,7 +128,7 @@ const pinchIt = (target, options = {}) => {
    * reset function:
    * @param { Number } duration
    * @param { String } easing
-   * @return { void }
+   * @return { Void }
    */
   const reset = (duration: number, easing: string): void => {
     Array.from(elements).forEach(el => scaleEl(el, 1, duration, easing));
@@ -136,7 +137,7 @@ const pinchIt = (target, options = {}) => {
   /**
    * public
    * destroy function: called to gracefully destroy the lory instance
-   * @return { void }
+   * @return { Void }
    */
   const destroy = (): void => {
     dispatchPinchEvent('before', 'destroy');
@@ -149,7 +150,7 @@ const pinchIt = (target, options = {}) => {
    * setup - Init function
    *
    * @param { String, Object }
-   * @return { void }
+   * @return { Void }
    **/
 
   type Options = {
