@@ -10,7 +10,7 @@
     "build": "npm run clean && npm run build:lib",
     "lint": "node_modules/.bin/eslint src/",
     "test": "node_modules/.bin/karma start test/karma.conf.js",
-    "demo:watch": "webpack-dev-server --inline --config webpack.config.js --content-base docs --port 8721",
+    "demo:watch": "webpack-dev-server --inline --config webpack.config.js --content-base docs --port 3050 --host 0.0.0.0",
     "demo:build": "NODE_ENV=production webpack",
     "prepublish": "npm run lint && npm run build"
   },
@@ -36,6 +36,9 @@
     "karma-chrome-launcher": "^2.0.0",
     "karma-coverage": "^0.5.5",
     "karma-firefox-launcher": "^1.0.0",
+    "karma-fixture": "^0.2.6",
+    "karma-html2js-preprocessor": "^1.1.0",
+    "karma-json-fixtures-preprocessor": "0.0.6",
     "karma-mocha": "^0.2.2",
     "karma-phantomjs-launcher": "^1.0.2",
     "karma-sinon": "1.0.5",
