@@ -12,6 +12,7 @@
     "es6"
   ],
   "main": "lib/index.js",
+  "jsnext:main": "./src/index.js",
   "scripts": {
     "clean": "node_modules/.bin/rimraf ./lib",
     "build:lib": "node_modules/.bin/babel src/ -d lib/",
@@ -62,6 +63,21 @@
     "webpack": "^2.2.1",
     "webpack-dev-server": "^2.3.0"
   },
-  "author": "Philip Knape",
+  "author": {
+    "name": "Philip Knape",
+    "email": "philip.knape@gmail.com",
+    "url": "https://philipknape.me"
+  },
+  "bugs": {
+    "url": "https://github.com/Knape/pinchit/issues"
+  },
+  "licenses": [{
+    "type": "MIT",
+    "url": "https://raw.githubusercontent.com/Knape/pinchit/master/LICENSE"
+  }],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Knape/pinchit.git"
+  },
   "license": "MIT"
 }
