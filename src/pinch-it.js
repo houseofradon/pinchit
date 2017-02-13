@@ -130,8 +130,15 @@ const pinchIt = (targets: string, options: Object = {}) => {
    * @param { String } easing
    * @return { Void }
    */
-  const reset = (duration: number, easing: string): void => {
-    Array.from(elements).forEach(el => scaleEl(el, 1, duration, easing));
+  const reset = (opt: Object) => (item: ?number): void => {
+    const { snapBackSpeed, easing } = {...defaults, ...opt};
+
+    if (item && !isNaN(item) && elements[item]) {
+      scaleEl(elements[item], 1, snapBackSpeed, easing);
+    } else {
+      Array.from(elements).forEach(el => scaleEl(el, 1, snapBackSpeed, easing));
+    }
+
     lastScale = 1;
     firstTouch = null;
     lastTouch = null;
@@ -194,7 +201,7 @@ const pinchIt = (targets: string, options: Object = {}) => {
 
   return {
     setup,
-    reset,
+    reset: reset(options),
     destroy,
     elements,
   };
