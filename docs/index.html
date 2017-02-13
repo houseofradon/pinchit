@@ -38,7 +38,7 @@
   <div class="steps">
     <section class="container">
       <div class="step step-last">
-        <h4>Basic Example:</h4>
+        <h4>Example: Single element</h4>
       </div>
       <div class="img-example example-one">
         <div class="img-wrapper">
@@ -51,6 +51,81 @@
         document.addEventListener('DOMContentLoaded', function () {
           const image = document.querySelector('img');
           pinch(image);
+       });
+      </code></pre>
+    </section>
+  </div>
+  <div class="steps">
+    <section class="container">
+      <div class="step step-last">
+        <h4>Example: Multiple elements</h4>
+      </div>
+      <div class="img-example example-two">
+        <div class="img-wrapper">
+          <img src="/assets/images/example-two-first.jpg" class="img-responsive" alt="">
+        </div>
+      </div>
+      <div class="img-example example-two">
+        <div class="img-wrapper">
+          <img src="/assets/images/example-two-second.jpg" class="img-responsive" alt="">
+        </div>
+      </div>
+      <pre><code class="language-js">
+        import pinch from 'pinchit'
+
+        document.addEventListener('DOMContentLoaded', function () {
+          const image = document.querySelectorAll('img');
+          pinch(image);
+       });
+      </code></pre>
+    </section>
+  </div>
+  <div class="steps">
+    <section class="container">
+      <div class="step step-last">
+        <h4>Example: Custom options</h4>
+      </div>
+      <div class="img-example example-tree">
+        <div class="img-wrapper">
+          <img src="/assets/images/example-one.jpg" class="img-responsive" alt="">
+        </div>
+      </div>
+      <pre><code class="language-js">
+        import pinch from 'pinchit'
+
+        document.addEventListener('DOMContentLoaded', function () {
+          const image = document.querySelector('img');
+          pinch(image, {
+            maxScale: 4,
+            minScale: 0.5,
+            snapBackSpeed: 500,
+          });
+       });
+      </code></pre>
+    </section>
+  </div>
+  <div class="steps">
+    <section class="container">
+      <div class="step step-last">
+        <h4>Example: Methods</h4>
+      </div>
+      <div class="img-example example-four">
+        <div class="img-wrapper">
+          <img src="/assets/images/example-one.jpg" class="img-responsive" alt="">
+        </div>
+      </div>
+      <div class="reset-button">reset</div>
+      <pre><code class="language-js">
+        import pinch from 'pinchit'
+
+        document.addEventListener('DOMContentLoaded', function () {
+          const image = document.querySelector('img');
+          const pinchImage = pinch(image);
+          document
+            .querySelector('.reset-button')
+            .addEventListener('click', () => {
+              pinchImage.reset();
+            })
        });
       </code></pre>
     </section>
