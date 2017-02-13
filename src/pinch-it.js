@@ -5,7 +5,7 @@ import dispatchEvent from './utils/dispatch-event';
 import { isWithin, calcScale, calcNewScale, getScale } from './utils/pinch';
 import defaults from './defaults';
 
-const pinchIt = (target, options = {}) => {
+const pinchIt = (targets: string, options: Object = {}) => {
   // private variable cache
   let elements;
   let scaling;
@@ -70,7 +70,7 @@ const pinchIt = (target, options = {}) => {
    * private
    * @param { Object } e the event from our eventlistener
    */
-  const onTouchstart = (/* opt */) => (e: Event) => {
+  const onTouchstart = (/* opt */) => (e: TouchEvent) => {
     scaling = (e.touches.length === 2);
     firstTouch = Array.from(e.touches);
 
@@ -82,7 +82,7 @@ const pinchIt = (target, options = {}) => {
     dispatchPinchEvent('on', 'touchstart', { e });
   };
 
-  const onTouchmove = ({ease}) => (e: Event) => {
+  const onTouchmove = ({ease}) => (e: TouchEvent) => {
     if (!scaling || !firstTouch) return;
     dispatchPinchEvent('before', 'touchmove');
 
@@ -96,7 +96,7 @@ const pinchIt = (target, options = {}) => {
     dispatchPinchEvent('after', 'touchmove');
   };
 
-  const onTouchend = opts => (e: Event) => {
+  const onTouchend = opts => (e: TouchEvent) => {
     if (!firstTouch || !lastTouch) return;
     const scale = calcNewScale(calcScale(firstTouch, lastTouch), lastScale);
 
