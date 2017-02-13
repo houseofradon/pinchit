@@ -1,6 +1,16 @@
 // @flow
 
 /**
+ * Calculates the average of multiple vectors (x, y values)
+ */
+const getVectorAvg = (vectors) => {
+  // return {
+  //   x: vectors.map((v) => (v.x)).reduce(sum) / vectors.length,
+  //   y: vectors.map(function (v) { return v.y; }).reduce(sum) / vectors.length
+  // };
+};
+
+/**
  * calcDist - Calculate the distance between our fingers
  *
  * @param { Array } touches touches passas an array from TouchList
@@ -32,9 +42,26 @@ export const isWithin = (scale: number, opts: Object): boolean => {
  * @param { Node } el current scale value
  * @return { Number }
  **/
-export const getScale = el => (
+export const getInitialScale = el => (
   el.getBoundingClientRect().width / el.offsetWidth
 );
+
+/**
+ * Scales the zoom factor relative to current state
+ * @param scale
+ * @return the actual scale (can differ because of max min zoom factor)
+ */
+export const scaleFactor = (scaleFactor, scale, opts) => {
+  const originalZoomFactor = scaleFactor;
+  let newScaleFactor = scaleFactor * scale;
+  newScaleFactor = Math.min(opts.maxScale, Math.max(newScaleFactor, opts.minScale));
+  return {
+    newScaleFactor,
+    originalZoomFactor,
+  };
+};
+
+export const getTouchCenter = touches => getVectorAvg(touches);
 
 /**
  * calcScale - Calculate the distance between where we start our pinch
