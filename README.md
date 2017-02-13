@@ -1,7 +1,5 @@
 ## Pinch it
 
-### Warning, this module is still work in progress and should considered as not functional
-
 ### Description
 Zoom images without dependencies
 
