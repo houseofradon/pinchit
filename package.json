@@ -2,7 +2,7 @@
   "name": "pinchit",
   "version": "0.5.0",
   "description": "Zoom images without dependencies",
-  "keywords": ["pinch", "zoom", "mobile", "es6"],
+  "keywords": ["pinch", "zoom", "mobile", "touch", "javascript", "vanilla", "es6"],
   "main": "lib/index.js",
   "scripts": {
     "clean": "node_modules/.bin/rimraf ./lib",
