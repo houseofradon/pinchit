@@ -47,7 +47,7 @@ const pinchIt = (targets: string, options: Object = {}) => {
    * @param { String } ease easing css property
    * @return { Void }
    */
-  const scaleEl = (el, to: number, duration: number, ease: string): void => {
+  const scaleEl = (el: EventTarget, to: number, duration: number, ease: string): void => {
     const { transition, transform, hasScale3d } = prefixes;
     const { style } = el;
     // Base our new dimention on our prevous value minus our base value
@@ -107,7 +107,7 @@ const pinchIt = (targets: string, options: Object = {}) => {
     if (!isWithin(scale, opts)) {
       const isLessThan = (scale < opts.minScale);
       lastScale = isLessThan ? opts.minScale : opts.maxScale;
-      scaleEl(e.target, lastScale, lastScale, opts.snapBackSpeed, opts.ease);
+      scaleEl(e.target, lastScale, opts.snapBackSpeed, opts.ease);
     }
   };
 
