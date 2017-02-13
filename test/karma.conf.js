@@ -9,7 +9,13 @@ module.exports = (config) => {
 
     // frameworks to use
     // available frameworks: https://npmjs.org/browse/keyword/karma-adapter
-    frameworks: ['mocha', 'chai', 'sinon', 'fixture'],
+    frameworks: ['mocha', 'chai', 'sinon', 'sinon-chai', 'fixture'],
+
+    client: {
+      chai: {
+        includeStack: true
+      }
+    },
 
     // list of files / patterns to load in the browser
     files: [{
@@ -59,11 +65,11 @@ module.exports = (config) => {
       'karma-mocha',
       'karma-coverage',
       'karma-chai',
+      'karma-sinon-chai',
       'karma-sinon',
       'karma-sourcemap-loader',
       'karma-fixture',
       'karma-html2js-preprocessor',
-      'karma-chrome-launcher',
       'karma-firefox-launcher',
       'istanbul-instrumenter-loader',
     ],

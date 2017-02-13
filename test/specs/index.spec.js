@@ -1,4 +1,5 @@
-/* globals it, describe, before, beforeEach, expect, sinon, fixture */
+/* globals it, describe, before, beforeEach, expect, chai, sinonChai, sinon, fixture */
+/* eslint no-unused-expressions: 0 */
 
 import pinchit from '../../src/';
 
@@ -117,7 +118,7 @@ describe('pinchit()', () => {
         pinchit(node);
         executeGesture(node, () => {
           expect(true).to.eql(true);
-          done()
+          done();
         });
       });
       it('pinchit should fire events', () => {});
