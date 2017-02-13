@@ -1,11 +1,16 @@
 // @flow
-
-import detectPrefixes from './utils/detect-prefixes';
+//
 import dispatchEvent from './utils/dispatch-event';
 import { detectDoubleTap } from './utils/detect-event';
-import { cancelEvent } from './utils/handle-events';
+import { cancelEvent } from './utils/handle-event';
 
-import { isWithin, calcScale, calcNewScale, getInitialScale } from './utils/pinch';
+import {
+  scaleEl,
+  isWithin,
+  calcScale,
+  calcNewScale,
+  getInitialScale
+} from './utils/pinch';
 import defaults from './defaults';
 
 const pinchIt = (targets: string | Object, options: Object = {}) => {
@@ -15,8 +20,6 @@ const pinchIt = (targets: string | Object, options: Object = {}) => {
   let lastScale;
   let firstTouch;
   let lastTouch;
-
-  const prefixes = detectPrefixes();
 
  /**
   *  dispatchPinchEvent - Shorthand method for creating events
@@ -30,27 +33,11 @@ const pinchIt = (targets: string | Object, options: Object = {}) => {
     dispatchEvent(elements, `${phase}.pinch.${type}`);
   };
 
-  /**
-   * scaleEl -translates to a given position in a given time in milliseconds
-   *
-   * @param { Object } element element from the events
-   * @param { Number } number in pixels where to translate to
-   * @param { Number } duration time in milliseconds for the transistion
-   * @param { String } ease easing css property
-   * @return { Void }
-   */
-  const scaleEl = (el: EventTarget, to: number, duration: number, ease: string): void => {
-    const { transition, transform, hasScale3d } = prefixes;
-    const { style } = el;
-    // Base our new dimention on our prevous value minus our base value
-
-    const scaleProp = (hasScale3d)
-      ? `scale3d(${to}, ${to}, 1)`
-      : `scale(${to}, ${to})`;
-
-    style[`${transition}TimingFunction`] = ease;
-    style[`${transition}Duration`] = `${duration}ms`;
-    style[transform] = scaleProp;
+  const resetGlobals = (/* opts */): void => {
+    scaling = false;
+    lastScale = 1;
+    firstTouch = null;
+    lastTouch = null;
   };
 
   // event handling
@@ -61,12 +48,15 @@ const pinchIt = (targets: string | Object, options: Object = {}) => {
    * private
    * @param { Object } e the event from our eventlistener
    */
-  const onTouchstart = (/* opt */) => (e: TouchEvent) => {
+  const onTouchstart = (opts: Object) => (e: TouchEvent) => {
     scaling = (e.touches.length === 2);
     firstTouch = Array.from(e.touches);
 
     cancelEvent(e);
-    (detectDoubleTap(e)) ? console.log('true') : console.log('false');
+    if (detectDoubleTap(e)) {
+      scaleEl(e.target, 1, opts.snapBackSpeed, opts.ease);
+      resetGlobals();
+    }
     dispatchPinchEvent('on', 'touchstart', { e });
   };
 
@@ -127,9 +117,7 @@ const pinchIt = (targets: string | Object, options: Object = {}) => {
       Array.from(elements).forEach(el => scaleEl(el, 1, snapBackSpeed, easing));
     }
 
-    lastScale = 1;
-    firstTouch = null;
-    lastTouch = null;
+    resetGlobals();
   };
 
   /**
