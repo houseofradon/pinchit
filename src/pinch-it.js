@@ -170,9 +170,9 @@ const pinchIt = (targets: string, options: Object = {}) => {
     // resolve target
     // pinchit allows for both a node or a string to be passed
     switch (typeof target) {
-      case 'object':
-        elements = Array.isArray(target) ? target : [target];
-        break;
+      // case 'object':
+      //   elements = Array.isArray(target) ? target : [target];
+      //   break;
       case 'string':
         elements = document.querySelectorAll(target);
         break;
@@ -187,7 +187,7 @@ const pinchIt = (targets: string, options: Object = {}) => {
   };
 
   // trigger initial setup
-  setup(target, options);
+  setup(targets, options);
 
   return {
     setup,
