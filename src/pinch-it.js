@@ -3,9 +3,8 @@
 import dispatchEvent from './utils/dispatch-event';
 import { detectDoubleTap } from './utils/detect-event';
 import { cancelEvent } from './utils/handle-event';
-
+import { scaleEl } from './utils/handle-element';
 import {
-  scaleEl,
   isWithin,
   calcScale,
   calcNewScale,
