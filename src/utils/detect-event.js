@@ -1,6 +1,6 @@
 // @flow
 
-import { cancelEvent } from './handle-events';
+import { cancelEvent } from './handle-event';
 
 let lastTouchStart = 0;
 

@@ -2,6 +2,8 @@
 
 ### In progress
 
+- Zoom out on double tab when zoomed in
+
 ---
 
 ### Releases
