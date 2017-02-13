@@ -2,10 +2,13 @@
 
 import detectPrefixes from './utils/detect-prefixes';
 import dispatchEvent from './utils/dispatch-event';
-import { isWithin, calcScale, calcNewScale, getScale } from './utils/pinch';
+import { detectDoubleTap } from './utils/detect-event';
+import { cancelEvent } from './utils/handle-events';
+
+import { isWithin, calcScale, calcNewScale, getInitialScale } from './utils/pinch';
 import defaults from './defaults';
 
-const pinchIt = (targets: string, options: Object = {}) => {
+const pinchIt = (targets: string | Object, options: Object = {}) => {
   // private variable cache
   let elements;
   let scaling;
@@ -25,17 +28,6 @@ const pinchIt = (targets: string, options: Object = {}) => {
   **/
   const dispatchPinchEvent = (phase: string, type: string): void => {
     dispatchEvent(elements, `${phase}.pinch.${type}`);
-  };
-
- /**
-  *  cancelEvent - Cancel Events so we dont bubble up our events to the document
-  *
-  *  @param { Object } event
-  *  @return { Void }
-  **/
-  const cancelEvent = (e: Event): void => {
-    e.stopPropagation();
-    e.preventDefault();
   };
 
   /**
@@ -62,7 +54,6 @@ const pinchIt = (targets: string, options: Object = {}) => {
   };
 
   // event handling
-
   /**
    * Set scaling if we are using more then one finger
    * and captures our first punch point
@@ -75,10 +66,7 @@ const pinchIt = (targets: string, options: Object = {}) => {
     firstTouch = Array.from(e.touches);
 
     cancelEvent(e);
-    // Disable aniamtion so we can pinch
-    // Set our initial starting point for our pinch
-    // scaleEl(e.target, 1, 0, ease);
-
+    (detectDoubleTap(e)) ? console.log('true') : console.log('false');
     dispatchPinchEvent('on', 'touchstart', { e });
   };
 
@@ -100,7 +88,7 @@ const pinchIt = (targets: string, options: Object = {}) => {
     if (!firstTouch || !lastTouch) return;
     const scale = calcNewScale(calcScale(firstTouch, lastTouch), lastScale);
 
-    lastScale = getScale(e.target);
+    lastScale = getInitialScale(e.target);
     firstTouch = null;
     lastTouch = null;
 
@@ -111,7 +99,7 @@ const pinchIt = (targets: string, options: Object = {}) => {
     }
   };
 
-  const attachEvents = opts => (el: Object) => {
+  const attachEvents = opts => (el: HTMLElement) => {
     el.addEventListener('touchstart', onTouchstart(opts));
     el.addEventListener('touchmove', onTouchmove(opts));
     el.addEventListener('touchend', onTouchend(opts));
