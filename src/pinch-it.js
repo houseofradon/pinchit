@@ -132,6 +132,9 @@ const pinchIt = (targets: string, options: Object = {}) => {
    */
   const reset = (duration: number, easing: string): void => {
     Array.from(elements).forEach(el => scaleEl(el, 1, duration, easing));
+    lastScale = 1;
+    firstTouch = null;
+    lastTouch = null;
   };
 
   /**
