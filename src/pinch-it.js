@@ -170,7 +170,7 @@ const pinchIt = (targets: string, options: Object = {}) => {
     ease?: string;
   };
 
-  const setup = (target: string, opt: Options): void => {
+  const setup = (target: string | Object, opt: Options): void => {
     if (elements) destroy();
     dispatchPinchEvent('before', 'init');
 
@@ -180,9 +180,9 @@ const pinchIt = (targets: string, options: Object = {}) => {
     // resolve target
     // pinchit allows for both a node or a string to be passed
     switch (typeof target) {
-      // case 'object':
-      //   elements = Array.isArray(target) ? target : [target];
-      //   break;
+      case 'object':
+        elements = Array.isArray(target) ? target : [target];
+        break;
       case 'string':
         elements = document.querySelectorAll(target);
         break;
