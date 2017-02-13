@@ -7,7 +7,6 @@
   ],
   "license": "MIT",
   "homepage": "https://github.com/Knape/pinchit",
-  "private": false,
   "moduleType": [
     "amd",
     "node"
@@ -20,7 +19,8 @@
     "JavaScript",
     "Vanilla",
     "lean"
-],
+  ],
+  "version": "0.5.0",
   "ignore": [
     "**/.*",
     "node_modules",
