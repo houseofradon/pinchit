@@ -2,18 +2,28 @@
 //
 import eventDispatcher from './utils/dispatch-event';
 import { detectDoubleTap } from './utils/detect-event';
-import { cancelEvent } from './utils/handle-event';
-import { scaleEl, translateEl } from './utils/handle-element';
-import { isWithin, calcScale, calcNewScale, getInitialScale } from './utils/pinch';
+import { cancelEvent, getTouches } from './utils/handle-event';
+import { scaleElement, scaleEl, translateEl } from './utils/handle-element';
+import { isWithin, calcScale, calcNewScale, getInitialScale, scaleFactor, getTouchCenter } from './utils/handle-pinch';
+import { drag } from './utils/handle-drag';
 import defaults from './defaults';
+
+const first = (items: Array<Object>) => items[0];
 
 const pinchIt = (targets: string | Object, options: Object = {}) => {
   // private variable cache
   let elements;
+
   let scaling;
-  let lastScale;
+  let lastScale = 1;
   let firstTouch;
   let lastTouch;
+
+  let zoomFactor = 1;
+
+  let offset = { x: 0, y: 0 };
+  let lastDragPosition;
+  let lastZoomCenter = false
 
   const { on, dispatch } = eventDispatcher();
 
@@ -36,6 +46,7 @@ const pinchIt = (targets: string | Object, options: Object = {}) => {
     lastScale = 1;
     firstTouch = null;
     lastTouch = null;
+    zoomFactor = 1;
   };
 
   // event handling
@@ -60,17 +71,35 @@ const pinchIt = (targets: string | Object, options: Object = {}) => {
     dispatchPinchEvent('touchstart', 'after', e);
   };
 
-  const onTouchmove = ({ease}) => (e: TouchEvent) => {
+  const onTouchmove = (opts: Object) => (e: TouchEvent) => {
     dispatchPinchEvent('touchmove', 'before', e);
 
-    if ((!scaling || !firstTouch) && getInitialScale(e.target) > 1) {
+    if ((!scaling || !firstTouch) /* && getInitialScale(e.target) > 1 */) {
       cancelEvent(e);
+      const touch = first(getTouches(Array.from(e.touches)));
+      offset = drag(touch, lastDragPosition, offset);
+      lastDragPosition = touch;
+      console.log(zoomFactor);
+      translateEl(e.target, offset, zoomFactor);
     } else if (scaling && firstTouch) {
       cancelEvent(e);
-      lastTouch = Array.from(e.touches);
-      const scale = calcNewScale(calcScale(firstTouch, lastTouch), lastScale);
-      scaleEl(e.target, scale, 0, ease);
+
+      const touchCenter = getTouchCenter(Array.from(e.touches));
+      const newScale = calcScale(firstTouch, Array.from(e.touches));
+      let scale = newScale / lastScale;
+      console.log('scale', scale);
+      console.log('zoomFactor', zoomFactor);
+      const factor = scaleFactor(scale, zoomFactor, opts);
+      console.log(factor);
+      zoomFactor = factor.zoomFactor;
+      scale = factor.scale;
+      lastScale = newScale;
+      lastZoomCenter = touchCenter;
+
+      offset = drag(first(Array.from(e.touches)), lastDragPosition, offset);
     }
+
+    scaleElement(e.target, zoomFactor, offset, 0, opts.ease);
 
     dispatchPinchEvent('touchmove', 'after', e);
   };
@@ -78,18 +107,19 @@ const pinchIt = (targets: string | Object, options: Object = {}) => {
   const onTouchend = opts => (e: TouchEvent) => {
     dispatchPinchEvent('touchend', 'before', e);
 
-    if (!firstTouch || !lastTouch) {
-    } else if (firstTouch && lastTouch) {
-      const scale = calcNewScale(calcScale(firstTouch, lastTouch), lastScale);
-      lastScale = getInitialScale(e.target);
-      firstTouch = null;
-      lastTouch = null;
+    if (firstTouch && lastTouch) {
+      // const scale = calcNewScale(calcScale(firstTouch, lastTouch), lastScale);
+      //
+      // resetGlobals();
 
-      if (!isWithin(scale, opts)) {
-        const isLessThan = (scale < opts.minScale);
-        lastScale = isLessThan ? opts.minScale : opts.maxScale;
-        scaleEl(e.target, lastScale, opts.snapBackSpeed, opts.ease);
-      }
+
+      // lastScale = getInitialScale(e.target);
+      //
+      // if (!isWithin(getInitialScale(e.target) * zoomFactor, opts)) {
+      //   const isLessThan = (getInitialScale(e.target) * zoomFactor < opts.minScale);
+      //   lastScale = isLessThan ? opts.minScale : opts.maxScale;
+      //   scaleEl(e.target, lastScale, opts.snapBackSpeed, opts.ease);
+      // }
     }
 
     dispatchPinchEvent('touchend', 'after', e);

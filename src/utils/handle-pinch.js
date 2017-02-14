@@ -1,15 +1,17 @@
 // @flow
 
-import { calcDist, getTouches } from './handle-event';
+import { getDistance, getTouches } from './handle-event';
+
+const sum = (acc, next) => acc + next;
 
 /**
  * Calculates the average of multiple vectors (x, y values)
  */
 const getVectorAvg = (vectors) => {
-  // return {
-  //   x: vectors.map((v) => (v.x)).reduce(sum) / vectors.length,
-  //   y: vectors.map(function (v) { return v.y; }).reduce(sum) / vectors.length
-  // };
+  return {
+    x: vectors.map(v => (v.x)).reduce(sum) / vectors.length,
+    y: vectors.map(v => (v.y)).reduce(sum) / vectors.length
+  };
 };
 
 /**
@@ -39,13 +41,12 @@ export const getInitialScale = (el: EventTarget): number => (
  * @param scale
  * @return the actual scale (can differ because of max min zoom factor)
  */
-export const scaleFactor = (scaleFactor, scale, opts) => {
-  const originalZoomFactor = scaleFactor;
-  let newScaleFactor = scaleFactor * scale;
-  newScaleFactor = Math.min(opts.maxScale, Math.max(newScaleFactor, opts.minScale));
+export const scaleFactor = (scale: number, factor: number, opts: Object) => {
+  const originalFactor = factor;
+  const zoomFactor = factor * scale;
   return {
-    newScaleFactor,
-    originalZoomFactor,
+    zoomFactor,
+    scale: zoomFactor / originalFactor,
   };
 };
 
@@ -60,9 +61,9 @@ export const getTouchCenter = touches => getVectorAvg(touches);
  * @return { Number }
  */
 export const calcScale = (startTouch: Array<Object>, endTouch: Array<Object>): number => (
-  calcDist(getTouches(endTouch)) / calcDist(getTouches(startTouch))
+  getDistance(getTouches(endTouch)) / getDistance(getTouches(startTouch))
 );
 
 export const calcNewScale = (to: number, lastScale: number = 1) => (
-  to + ((lastScale) - 1)
+  to / lastScale // + ((lastScale) - 1)
 );
