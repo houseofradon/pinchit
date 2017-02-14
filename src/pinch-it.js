@@ -3,13 +3,8 @@
 import eventDispatcher from './utils/dispatch-event';
 import { detectDoubleTap } from './utils/detect-event';
 import { cancelEvent } from './utils/handle-event';
-import { scaleEl } from './utils/handle-element';
-import {
-  isWithin,
-  calcScale,
-  calcNewScale,
-  getInitialScale
-} from './utils/pinch';
+import { scaleEl, translateEl } from './utils/handle-element';
+import { isWithin, calcScale, calcNewScale, getInitialScale } from './utils/pinch';
 import defaults from './defaults';
 
 const pinchIt = (targets: string | Object, options: Object = {}) => {
@@ -52,46 +47,51 @@ const pinchIt = (targets: string | Object, options: Object = {}) => {
    * @param { Object } e the event from our eventlistener
    */
   const onTouchstart = (opts: Object) => (e: TouchEvent) => {
-    scaling = (e.touches.length === 2);
     dispatchPinchEvent('touchstart', 'before', e);
+
+    scaling = (e.touches.length === 2);
     firstTouch = Array.from(e.touches);
 
-    cancelEvent(e);
     if (detectDoubleTap(e)) {
       scaleEl(e.target, 1, opts.snapBackSpeed, opts.ease);
       resetGlobals();
     }
+
     dispatchPinchEvent('touchstart', 'after', e);
   };
 
   const onTouchmove = ({ease}) => (e: TouchEvent) => {
-    if (!scaling || !firstTouch) return;
     dispatchPinchEvent('touchmove', 'before', e);
 
-    // dont bubble touch event
-    cancelEvent(e);
-
-    lastTouch = Array.from(e.touches);
-    const scale = calcNewScale(calcScale(firstTouch, lastTouch), lastScale);
-    scaleEl(e.target, scale, 0, ease);
+    if ((!scaling || !firstTouch) && getInitialScale(e.target) > 1) {
+      cancelEvent(e);
+    } else if (scaling && firstTouch) {
+      cancelEvent(e);
+      lastTouch = Array.from(e.touches);
+      const scale = calcNewScale(calcScale(firstTouch, lastTouch), lastScale);
+      scaleEl(e.target, scale, 0, ease);
+    }
 
     dispatchPinchEvent('touchmove', 'after', e);
   };
 
   const onTouchend = opts => (e: TouchEvent) => {
-    if (!firstTouch || !lastTouch) return;
     dispatchPinchEvent('touchend', 'before', e);
-    const scale = calcNewScale(calcScale(firstTouch, lastTouch), lastScale);
 
-    lastScale = getInitialScale(e.target);
-    firstTouch = null;
-    lastTouch = null;
+    if (!firstTouch || !lastTouch) {
+    } else if (firstTouch && lastTouch) {
+      const scale = calcNewScale(calcScale(firstTouch, lastTouch), lastScale);
+      lastScale = getInitialScale(e.target);
+      firstTouch = null;
+      lastTouch = null;
 
-    if (!isWithin(scale, opts)) {
-      const isLessThan = (scale < opts.minScale);
-      lastScale = isLessThan ? opts.minScale : opts.maxScale;
-      scaleEl(e.target, lastScale, opts.snapBackSpeed, opts.ease);
+      if (!isWithin(scale, opts)) {
+        const isLessThan = (scale < opts.minScale);
+        lastScale = isLessThan ? opts.minScale : opts.maxScale;
+        scaleEl(e.target, lastScale, opts.snapBackSpeed, opts.ease);
+      }
     }
+
     dispatchPinchEvent('touchend', 'after', e);
   };
 
