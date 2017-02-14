@@ -53,6 +53,7 @@ const pinchIt = (targets: string | Object, options: Object = {}) => {
    */
   const onTouchstart = (opts: Object) => (e: TouchEvent) => {
     scaling = (e.touches.length === 2);
+    dispatchPinchEvent('touchstart', 'before', e);
     firstTouch = Array.from(e.touches);
 
     cancelEvent(e);
@@ -60,12 +61,12 @@ const pinchIt = (targets: string | Object, options: Object = {}) => {
       scaleEl(e.target, 1, opts.snapBackSpeed, opts.ease);
       resetGlobals();
     }
-    dispatchPinchEvent('touchstart', 'before');
+    dispatchPinchEvent('touchstart', 'after', e);
   };
 
   const onTouchmove = ({ease}) => (e: TouchEvent) => {
     if (!scaling || !firstTouch) return;
-    dispatchPinchEvent('touchmove', 'before');
+    dispatchPinchEvent('touchmove', 'before', e);
 
     // dont bubble touch event
     cancelEvent(e);
@@ -74,11 +75,12 @@ const pinchIt = (targets: string | Object, options: Object = {}) => {
     const scale = calcNewScale(calcScale(firstTouch, lastTouch), lastScale);
     scaleEl(e.target, scale, 0, ease);
 
-    dispatchPinchEvent('touchmove', 'after');
+    dispatchPinchEvent('touchmove', 'after', e);
   };
 
   const onTouchend = opts => (e: TouchEvent) => {
     if (!firstTouch || !lastTouch) return;
+    dispatchPinchEvent('touchend', 'before', e);
     const scale = calcNewScale(calcScale(firstTouch, lastTouch), lastScale);
 
     lastScale = getInitialScale(e.target);
@@ -90,6 +92,7 @@ const pinchIt = (targets: string | Object, options: Object = {}) => {
       lastScale = isLessThan ? opts.minScale : opts.maxScale;
       scaleEl(e.target, lastScale, opts.snapBackSpeed, opts.ease);
     }
+    dispatchPinchEvent('touchend', 'after', e);
   };
 
   const attachEvents = opts => (el: HTMLElement) => {

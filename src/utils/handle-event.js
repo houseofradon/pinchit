@@ -6,21 +6,21 @@
  *  @param { Object } event
  *  @return { Void }
  **/
- export const cancelEvent = (e: Event): void => {
-   e.stopPropagation();
-   e.preventDefault();
- };
+export const cancelEvent = (e: Event): void => {
+  e.stopPropagation();
+  e.preventDefault();
+};
 
  /**
   * Returns the touches of an event relative to the container offset
   * @param event
   * @return array touches
   */
-export const getTouches = (touches, container) => {
+export const getTouches = (touche: TouchEvent, container) => {
   // const {left, top} = container.offset();
   return touches.map(touch => ({
     x: touch.pageX - 0, // left,
-    y: touch.pageY - 0 ,// top
+    y: touch.pageY - 0, // top
   }));
 };
 
