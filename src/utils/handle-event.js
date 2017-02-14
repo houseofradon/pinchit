@@ -16,7 +16,7 @@ export const cancelEvent = (e: Event): void => {
   * @param event
   * @return array touches
   */
-export const getTouches = (touche: TouchEvent, container) => {
+export const getTouches = (touches: TouchEvent, container) => {
   // const {left, top} = container.offset();
   return touches.map(touch => ({
     x: touch.pageX - 0, // left,
