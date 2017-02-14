@@ -1,6 +1,6 @@
 // @flow
 //
-import dispatchEvent from './utils/dispatch-event';
+import eventDispatcher from './utils/dispatch-event';
 import { detectDoubleTap } from './utils/detect-event';
 import { cancelEvent } from './utils/handle-event';
 import { scaleEl } from './utils/handle-element';
@@ -20,6 +20,8 @@ const pinchIt = (targets: string | Object, options: Object = {}) => {
   let firstTouch;
   let lastTouch;
 
+  const { on, dispatch } = eventDispatcher();
+
  /**
   *  dispatchPinchEvent - Shorthand method for creating events
   *
@@ -28,8 +30,10 @@ const pinchIt = (targets: string | Object, options: Object = {}) => {
   *  @param { Object } details
   *  @return { Void }
   **/
-  const dispatchPinchEvent = (phase: string, type: string): void => {
-    dispatchEvent(elements, `${phase}.pinch.${type}`);
+  const dispatchPinchEvent = (eventName: string, phase: string, data: Object = {}): void => {
+    dispatch(eventName, Object.assign(data, {
+      phase
+    }));
   };
 
   const resetGlobals = (/* opts */): void => {
@@ -56,12 +60,12 @@ const pinchIt = (targets: string | Object, options: Object = {}) => {
       scaleEl(e.target, 1, opts.snapBackSpeed, opts.ease);
       resetGlobals();
     }
-    dispatchPinchEvent('on', 'touchstart', { e });
+    dispatchPinchEvent('touchstart', 'before');
   };
 
   const onTouchmove = ({ease}) => (e: TouchEvent) => {
     if (!scaling || !firstTouch) return;
-    dispatchPinchEvent('before', 'touchmove');
+    dispatchPinchEvent('touchmove', 'before');
 
     // dont bubble touch event
     cancelEvent(e);
@@ -70,7 +74,7 @@ const pinchIt = (targets: string | Object, options: Object = {}) => {
     const scale = calcNewScale(calcScale(firstTouch, lastTouch), lastScale);
     scaleEl(e.target, scale, 0, ease);
 
-    dispatchPinchEvent('after', 'touchmove');
+    dispatchPinchEvent('touchmove', 'after');
   };
 
   const onTouchend = opts => (e: TouchEvent) => {
@@ -125,10 +129,10 @@ const pinchIt = (targets: string | Object, options: Object = {}) => {
    * @return { Void }
    */
   const destroy = (): void => {
-    dispatchPinchEvent('before', 'destroy');
+    dispatchPinchEvent('destroy', 'before', {});
     // remove event listeners
     Array.from(elements).forEach(detachhEvents);
-    dispatchPinchEvent('after', 'destroy');
+    dispatchPinchEvent('destroy', 'after', {});
   };
 
   /**
@@ -147,7 +151,7 @@ const pinchIt = (targets: string | Object, options: Object = {}) => {
 
   const setup = (target: string | Object, opt: Options): void => {
     if (elements) destroy();
-    dispatchPinchEvent('before', 'init');
+    dispatchPinchEvent('init', 'before', {});
 
     // Base configuration for the pinch instance
     const opts = {...defaults, ...opt};
@@ -168,7 +172,7 @@ const pinchIt = (targets: string | Object, options: Object = {}) => {
 
     Array.from(elements).forEach(attachEvents(opts));
 
-    dispatchPinchEvent('after', 'init');
+    dispatchPinchEvent('init', 'after', {});
   };
 
   // trigger initial setup
@@ -179,6 +183,7 @@ const pinchIt = (targets: string | Object, options: Object = {}) => {
     reset: reset(options),
     destroy,
     elements,
+    on,
   };
 };
 
