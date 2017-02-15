@@ -71,17 +71,17 @@ export const scaleFactor = (scale: number, factor: number, opts: Object) => {
  */
 export const getCurrentZoomCenter = (el, zoomFactor, offset) => {
   const length = getParentX(el) * zoomFactor;
-  const offsetLeft  = offset.x;
-  const offsetRight = length - offsetLeft -getParentX(el);
+  const offsetLeft = offset.x;
+  const offsetRight = length - offsetLeft - getParentX(el);
   const widthOffsetRatio = offsetLeft / offsetRight;
-  const centerX = widthOffsetRatio * getParentX(el) / (widthOffsetRatio + 1);
+  let centerX = (widthOffsetRatio * getParentX(el)) / (widthOffsetRatio + 1);
 
   // the same for the zoomcenter y
   const height = getParentY(el) * zoomFactor;
-  const offsetTop  = offset.y;
+  const offsetTop = offset.y;
   const offsetBottom = height - offsetTop - getParentY(el);
   const heightOffsetRatio = offsetTop / offsetBottom;
-  const centerY = heightOffsetRatio * getParentY(el) / (heightOffsetRatio + 1);
+  let centerY = (heightOffsetRatio * getParentY(el)) / (heightOffsetRatio + 1);
 
   // prevents division by zero
   if (offsetRight === 0) { centerX = getParentX(el); }
@@ -91,7 +91,7 @@ export const getCurrentZoomCenter = (el, zoomFactor, offset) => {
     x: centerX,
     y: centerY,
   };
-},
+};
 
 export const getTouchCenter = (touches: Array<Object>) => getVectorAvg(touches);
 
