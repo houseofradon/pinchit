@@ -7,6 +7,7 @@ const prefixes = detectPrefixes();
 
 const handleAnimation = (el: EventTarget, transition: string, duration: number, ease: string): void => {
   const { style } = el;
+  style.transformOrigin = '0% 0%';
   style[`${transition}TimingFunction`] = ease;
   style[`${transition}Duration`] = `${duration}ms`;
 };
@@ -27,8 +28,8 @@ export default (el: EventTarget, pinch: number, coords: Object, duration: number
   const { style } = el;
 
   const zoomFactor = getInitialScale(el) * pinch;
-  const offsetX = -coords.x / zoomFactor;
-  const offsetY = -coords.y / zoomFactor;
+  const offsetX = -coords.x; // / zoomFactor;
+  const offsetY = -coords.y; // / zoomFactor;
 
   handleAnimation(el, transition, duration, ease);
   const scaleProp = (hasScale3d)
