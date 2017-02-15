@@ -23,7 +23,7 @@ isWithin - Check if value is between two values
  **/
 export const isWithin = (scale: number, opts: Object): boolean => {
   const { maxScale, minScale } = opts;
-  return (scale > minScale) && (scale < maxScale);
+  return (scale >= minScale) && (scale <= maxScale);
 };
 
 /**
