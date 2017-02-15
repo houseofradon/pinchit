@@ -30,7 +30,7 @@ export const isWithin = (scale: number, opts: Object): boolean => {
   return (scale >= minScale) && (scale <= maxScale);
 };
 
-export const getOffset = (lastOffset: Object, offset: Object) => ({
+export const addOffset = (lastOffset: Object, offset: Object) => ({
   x: lastOffset.x + offset.x,
   y: lastOffset.y + offset.y,
 });
@@ -57,9 +57,11 @@ export const getInitialScale = (el: EventTarget): number => (
  */
 export const scaleFactor = (scale: number, factor: number, opts: Object) => {
   const originalFactor = factor;
-  const zoomFactor = factor * scale;
+  let zoomFactor = factor * scale;
+  const { maxScaleTimes, minScaleTimes } = opts;
+  zoomFactor = Math.min(maxScaleTimes, Math.max(zoomFactor, minScaleTimes));
   return {
-    zoomFactor: Math.min(opts.maxScale * 2, Math.max(zoomFactor, opts.minScale / 2)),
+    zoomFactor,
     scale: zoomFactor / originalFactor,
   };
 };
@@ -103,8 +105,8 @@ export const getTouchCenter = (touches: Array<Object>) => getVectorAvg(touches);
  * @param { Array } endTouch The current point of our touch
  * @return { Number }
  */
-export const calcScale = (startTouch: Array<Object>, endTouch: Array<Object>): number => (
-  getDistance(getTouches(endTouch)) / getDistance(getTouches(startTouch))
+export const calcScale = (el, startTouch: Array<Object>, endTouch: Array<Object>): number => (
+  getDistance(getTouches(el, endTouch)) / getDistance(getTouches(el, startTouch))
 );
 
 export const calcNewScale = (to: number, lastScale: number = 1) => to / lastScale;

@@ -13,10 +13,22 @@ export default {
   maxScale: 3,
 
   /**
+   * max scale a node can reach before bouncing back to maxScale
+   * @maxScaleTimes {Number}
+   */
+  maxScaleTimes: 4,
+
+  /**
    * min scale a node can reach
    * @minPinch {Number}
    */
   minScale: 1,
+
+  /**
+   * min scale a node can reach before bouncing back to minScale
+   * @minScaleTimes {Number}
+   */
+  minScaleTimes: 0.8,
 
   /**
    * time for the snapBack of the pinch if the node has reach above

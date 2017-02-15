@@ -26,10 +26,11 @@ export const cancelEvent = (e: Event): void => {
  * @param event
  * @return array touches
  */
-export const getTouches = (touches: Array<TochPage>): Array<Touch> => {
+export const getTouches = (el, touches: Array<TochPage>): Array<Touch> => {
+  const position = el.parentElement.getBoundingClientRect();
   return touches.map(touch => ({
-    x: touch.pageX,
-    y: touch.pageY,
+    x: touch.pageX - (position.left + document.body.scrollLeft),
+    y: touch.pageY - (position.top + document.body.scrollTop),
   }));
 };
 
