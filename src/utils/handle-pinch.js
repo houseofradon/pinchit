@@ -32,9 +32,11 @@ export const isWithin = (scale: number, opts: Object): boolean => {
  * @param { Node } el current scale value
  * @return { Number }
  **/
-export const getInitialScale = (el: EventTarget): number => (
-  el.getBoundingClientRect().width / el.offsetWidth
-);
+export const getInitialScale = (el: HTMLImageElement): number => {
+  return (el instanceof HTMLImageElement && el.parentElement instanceof HTMLDivElement)
+    ? el.parentElement.offsetWidth / el.offsetWidth
+    : 1;
+};
 
 /**
  * Scales the zoom factor relative to current state
