@@ -5,58 +5,6 @@ import pinchit from '../../src/';
 
 let element;
 
-const executeGesture = (el, cb) => {
-  let event;
-  let touches;
-  touches = [
-    { pageX: 0, pageY: 10, identifier: 0, target: el },
-    { pageX: 10, pageY: 10, identifier: 1, target: el }
-  ];
-
-  event = document.createEvent('Event');
-  event.initEvent('touchstart', true, true);
-  event.touches = touches;
-  event.targetTouches = touches;
-  event.changedTouches = touches;
-  el.dispatchEvent(event);
-  setTimeout(() => {
-    touches = [
-      { pageX: 10, pageY: 20, identifier: 0, target: el },
-      { pageX: 20, pageY: 20, identifier: 1, target: el }
-    ];
-
-    event = document.createEvent('Event');
-    event.initEvent('touchmove', true, true);
-    event.touches = touches;
-    event.targetTouches = touches;
-    event.changedTouches = touches;
-
-    el.dispatchEvent(event);
-  }, 100);
-
-  setTimeout(() => {
-    touches = [
-      { pageX: 20, pageY: 30, identifier: 0, target: el },
-      { pageX: 40, pageY: 30, identifier: 1, target: el }
-    ];
-
-    event = document.createEvent('Event');
-    event.initEvent('touchmove', true, true);
-    event.touches = touches;
-    event.targetTouches = touches;
-    event.changedTouches = touches;
-    el.dispatchEvent(event);
-
-    event = document.createEvent('Event');
-    event.initEvent('touchend', true, true);
-    event.touches = touches;
-    event.targetTouches = touches;
-    event.changedTouches = touches;
-    el.dispatchEvent(event);
-    cb();
-  }, 200);
-};
-
 describe('pinchit()', () => {
   before(() => {
     fixture.setBase('test');
@@ -109,31 +57,5 @@ describe('pinchit()', () => {
 
   describe('.destroy()', () => {
     it('has to be a function', () => {});
-  });
-
-  describe('pinch', () => {
-    describe('onTouchstart', () => {
-      it('pinchit should set style to element', (done) => {
-        const node = element.querySelector('img');
-        pinchit(node);
-        executeGesture(node, () => {
-          expect(true).to.eql(true);
-          done();
-        });
-      });
-      it('pinchit should fire events', () => {});
-    });
-
-    describe('onTouchmove', () => {
-      it('pinchit should set style to element', () => {});
-      it('pinchit should fire events', () => {});
-    });
-
-    describe('onTouchend', () => {
-      it('pinchit should set style to element', () => {});
-      it('should return if smaller then min value', () => {});
-      it('should return if smaller then max value', () => {});
-      it('pinchit should fire events', () => {});
-    });
   });
 });
