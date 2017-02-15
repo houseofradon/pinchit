@@ -4,7 +4,7 @@ import eventDispatcher from './utils/dispatch-event';
 import { detectDoubleTap } from './utils/detect-event';
 import { cancelEvent, getTouches } from './utils/handle-event';
 import scaleElement from './utils/handle-element';
-import { isWithin, calcScale, getOffset, getInitialScale, scaleFactor, getTouchCenter } from './utils/handle-pinch';
+import { isWithin, calcScale, calcNewScale, getOffset, getInitialScale, scaleFactor, getTouchCenter } from './utils/handle-pinch';
 import { drag, sanitizeOffset } from './utils/handle-drag';
 import defaults from './defaults';
 
@@ -91,7 +91,7 @@ const pinchIt = (targets: string | Object, options: Object = {}) => {
 
       const touchCenter = getTouchCenter(getTouches(Array.from(e.touches)));
       const newScale = calcScale(startTouches, Array.from(e.touches));
-      const scale = newScale / lastScale;
+      const scale = calcNewScale(newScale, lastScale);
       const factor = scaleFactor(scale, zoomFactor, opts);
 
       offset = getOffset(offset, {
