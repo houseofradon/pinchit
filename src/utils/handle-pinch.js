@@ -64,6 +64,35 @@ export const scaleFactor = (scale: number, factor: number, opts: Object) => {
   };
 };
 
+/**
+ * Calculates the virtual zoom center for the current offset and zoom factor
+ * (used for reverse zoom)
+ * @return {Object} the current zoom center
+ */
+export const getCurrentZoomCenter = (el, zoomFactor, offset) => {
+  const length = getParentX(el) * zoomFactor;
+  const offsetLeft  = offset.x;
+  const offsetRight = length - offsetLeft -getParentX(el);
+  const widthOffsetRatio = offsetLeft / offsetRight;
+  const centerX = widthOffsetRatio * getParentX(el) / (widthOffsetRatio + 1);
+
+  // the same for the zoomcenter y
+  const height = getParentY(el) * zoomFactor;
+  const offsetTop  = offset.y;
+  const offsetBottom = height - offsetTop - getParentY(el);
+  const heightOffsetRatio = offsetTop / offsetBottom;
+  const centerY = heightOffsetRatio * getParentY(el) / (heightOffsetRatio + 1);
+
+  // prevents division by zero
+  if (offsetRight === 0) { centerX = getParentX(el); }
+  if (offsetBottom === 0) { centerY = getParentY(el); }
+
+  return {
+    x: centerX,
+    y: centerY,
+  };
+},
+
 export const getTouchCenter = (touches: Array<Object>) => getVectorAvg(touches);
 
 /**
