@@ -16,7 +16,7 @@ export const cancelEvent = (e: Event): void => {
   * @param event
   * @return array touches
   */
-export const getTouches = (touches: TouchEvent) => {
+export const getTouches = (touches: Array<Object>) => {
   return touches.map(touch => ({
     x: touch.pageX,
     y: touch.pageY,
