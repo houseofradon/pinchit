@@ -3,7 +3,7 @@
 import eventDispatcher from './utils/dispatch-event';
 import { detectDoubleTap } from './utils/detect-event';
 import { cancelEvent, getTouches } from './utils/handle-event';
-import { scaleElement, scaleEl, translateEl } from './utils/handle-element';
+import scaleElement from './utils/handle-element';
 import { isWithin, calcScale, calcNewScale, getInitialScale, scaleFactor, getTouchCenter } from './utils/handle-pinch';
 import { drag } from './utils/handle-drag';
 import defaults from './defaults';
@@ -60,11 +60,13 @@ const pinchIt = (targets: string | Object, options: Object = {}) => {
   const onTouchstart = (opts: Object) => (e: TouchEvent) => {
     dispatchPinchEvent('touchstart', 'before', e);
 
+
     scaling = (e.touches.length === 2);
     firstTouch = Array.from(e.touches);
+    lastScale = 1;
 
     if (detectDoubleTap(e)) {
-      scaleEl(e.target, 1, opts.snapBackSpeed, opts.ease);
+      scaleElement(e.target, 1, { x: 0, y: 0 }, opts.snapBackSpeed, opts.ease);
       resetGlobals();
     }
 
@@ -74,25 +76,22 @@ const pinchIt = (targets: string | Object, options: Object = {}) => {
   const onTouchmove = (opts: Object) => (e: TouchEvent) => {
     dispatchPinchEvent('touchmove', 'before', e);
 
-    if ((!scaling || !firstTouch) /* && getInitialScale(e.target) > 1 */) {
+    if ((!scaling || !firstTouch) && zoomFactor > 1) {
       cancelEvent(e);
-      const touch = first(getTouches(Array.from(e.touches)));
-      offset = drag(touch, lastDragPosition, offset);
-      lastDragPosition = touch;
-      console.log(zoomFactor);
-      translateEl(e.target, offset, zoomFactor);
+      // const touch = first(getTouches(Array.from(e.touches)));
+      // offset = drag(touch, lastDragPosition, offset);
+      // lastDragPosition = touch;
+      // translateEl(e.target, offset, zoomFactor);
     } else if (scaling && firstTouch) {
       cancelEvent(e);
 
       const touchCenter = getTouchCenter(Array.from(e.touches));
       const newScale = calcScale(firstTouch, Array.from(e.touches));
-      let scale = newScale / lastScale;
-      console.log('scale', scale);
-      console.log('zoomFactor', zoomFactor);
+      const scale = newScale / lastScale;
       const factor = scaleFactor(scale, zoomFactor, opts);
-      console.log(factor);
+
       zoomFactor = factor.zoomFactor;
-      scale = factor.scale;
+      // scale = factor.scale;
       lastScale = newScale;
       lastZoomCenter = touchCenter;
 
@@ -107,19 +106,13 @@ const pinchIt = (targets: string | Object, options: Object = {}) => {
   const onTouchend = opts => (e: TouchEvent) => {
     dispatchPinchEvent('touchend', 'before', e);
 
-    if (firstTouch && lastTouch) {
-      // const scale = calcNewScale(calcScale(firstTouch, lastTouch), lastScale);
-      //
-      // resetGlobals();
-
-
-      // lastScale = getInitialScale(e.target);
-      //
-      // if (!isWithin(getInitialScale(e.target) * zoomFactor, opts)) {
-      //   const isLessThan = (getInitialScale(e.target) * zoomFactor < opts.minScale);
-      //   lastScale = isLessThan ? opts.minScale : opts.maxScale;
-      //   scaleEl(e.target, lastScale, opts.snapBackSpeed, opts.ease);
-      // }
+    if (zoomFactor) {
+      if (!isWithin(zoomFactor, opts)) {
+        const isLessThan = (getInitialScale(e.target) * zoomFactor < opts.minScale);
+        lastScale = 1;
+        zoomFactor = isLessThan ? opts.minScale : opts.maxScale;
+        scaleElement(e.target, zoomFactor, { x: 0, y: 0 }, opts.snapBackSpeed, opts.ease);
+      }
     }
 
     dispatchPinchEvent('touchend', 'after', e);
@@ -148,9 +141,11 @@ const pinchIt = (targets: string | Object, options: Object = {}) => {
     const { snapBackSpeed, easing } = {...defaults, ...opt};
 
     if (item && !isNaN(item) && elements[item]) {
-      scaleEl(elements[item], 1, snapBackSpeed, easing);
+      scaleElement(elements[item], 1, { x: 0, y: 0 }, snapBackSpeed, easing);
     } else {
-      Array.from(elements).forEach(el => scaleEl(el, 1, snapBackSpeed, easing));
+      Array.from(elements).forEach(el => (
+        scaleElement(el, 1, { x: 0, y: 0 }, snapBackSpeed, easing))
+      );
     }
 
     resetGlobals();
