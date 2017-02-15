@@ -4,7 +4,7 @@ import eventDispatcher from './utils/dispatch-event';
 import { detectDoubleTap } from './utils/detect-event';
 import { cancelEvent, getTouches } from './utils/handle-event';
 import scaleElement from './utils/handle-element';
-import { isWithin, calcScale, calcNewScale, getInitialScale, scaleFactor, getTouchCenter } from './utils/handle-pinch';
+import { isWithin, calcScale, getOffset, getInitialScale, scaleFactor, getTouchCenter } from './utils/handle-pinch';
 import { drag, sanitizeOffset } from './utils/handle-drag';
 import defaults from './defaults';
 
@@ -16,14 +16,13 @@ const pinchIt = (targets: string | Object, options: Object = {}) => {
 
   let scaling;
   let lastScale = 1;
-  let firstTouch;
+  let startTouches;
   let lastTouch;
 
   let zoomFactor = 1;
 
   let offset = { x: 0, y: 0 };
-  let lastDragPosition;
-  let lastZoomCenter = false
+  let lastZoomCenter = {}
 
   const { on, dispatch } = eventDispatcher();
 
@@ -44,8 +43,10 @@ const pinchIt = (targets: string | Object, options: Object = {}) => {
   const resetGlobals = (/* opts */): void => {
     scaling = false;
     lastScale = 1;
-    firstTouch = null;
+    startTouches = null;
     zoomFactor = 1;
+    lastZoomCenter = {};
+    offset = { x: 0, y: 0 };
   };
 
   // event handling
@@ -61,7 +62,7 @@ const pinchIt = (targets: string | Object, options: Object = {}) => {
 
 
     scaling = (e.touches.length === 2);
-    firstTouch = Array.from(e.touches);
+    startTouches = Array.from(e.touches);
     lastScale = 1;
 
     if (detectDoubleTap(e)) {
@@ -75,27 +76,32 @@ const pinchIt = (targets: string | Object, options: Object = {}) => {
   const onTouchmove = (opts: Object) => (e: TouchEvent) => {
     dispatchPinchEvent('touchmove', 'before', e);
 
-    if ((!scaling || !firstTouch) && zoomFactor > 1) {
+    if ((!scaling || !startTouches) && zoomFactor > 1) {
       cancelEvent(e);
       const touch = first(getTouches(Array.from(e.touches)));
-      const dragOffset = drag(touch, lastDragPosition, offset);
+      const dragOffset = drag(touch, lastZoomCenter, offset);
+
       offset = sanitizeOffset(e.target, dragOffset, zoomFactor);
-      lastDragPosition = touch;
-      console.log(offset);
-    } else if (scaling && firstTouch) {
+      lastZoomCenter = touch;
+    } else if (scaling && startTouches) {
       cancelEvent(e);
 
-      const touchCenter = getTouchCenter(Array.from(e.touches));
-      const newScale = calcScale(firstTouch, Array.from(e.touches));
+      const touchCenter = getTouchCenter(getTouches(Array.from(e.touches)));
+      const newScale = calcScale(startTouches, Array.from(e.touches));
       const scale = newScale / lastScale;
       const factor = scaleFactor(scale, zoomFactor, opts);
 
+      offset = getOffset(offset, {
+        x: (factor.scale - 1) * (touchCenter.x + offset.x),
+        y: (factor.scale - 1) * (touchCenter.y + offset.y)
+      });
+
+      console.log('touchCenter', touchCenter);
+
       zoomFactor = factor.zoomFactor;
-      // scale = factor.scale;
       lastScale = newScale;
       lastZoomCenter = touchCenter;
-
-      const dragOffset = drag(first(Array.from(e.touches)), lastDragPosition, offset);
+      const dragOffset = drag(first(getTouches(Array.from(e.touches))), lastZoomCenter, offset);
       offset = sanitizeOffset(e.target, dragOffset, zoomFactor);
     }
 
@@ -112,7 +118,8 @@ const pinchIt = (targets: string | Object, options: Object = {}) => {
         const isLessThan = (getInitialScale(e.target) * zoomFactor < opts.minScale);
         lastScale = 1;
         zoomFactor = isLessThan ? opts.minScale : opts.maxScale;
-        scaleElement(e.target, zoomFactor, { x: 0, y: 0 }, opts.snapBackSpeed, opts.ease);
+        offset = sanitizeOffset(e.target, offset, zoomFactor);
+        scaleElement(e.target, zoomFactor, offset, opts.snapBackSpeed, opts.ease);
       }
     }
 
