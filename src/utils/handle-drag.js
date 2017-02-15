@@ -1,6 +1,6 @@
 // @flow
 
-import { getParentX, getParentY } from './handle-pinch';
+import { getParentX, getParentY, getOffset } from './handle-pinch';
 
 type Center = {
   x: number;
@@ -22,8 +22,10 @@ export const sanitizeOffset = (el: EventTarget, offset: Center, zoomFactor: numb
 };
 
 export const drag = (center: Center, lastCenter: Center, lastOffset: Object) => (
-  (lastCenter) ? {
-    x: lastOffset.x + -(center.x - lastCenter.x),
-    y: lastOffset.y + -(center.y - lastCenter.y)
-  } : lastOffset
+  (Object.prototype.hasOwnProperty.call(lastCenter, 'x'))
+  ? getOffset(lastOffset, {
+    x: -(center.x - lastCenter.x),
+    y: -(center.y - lastCenter.y),
+  })
+  : lastOffset
 );
