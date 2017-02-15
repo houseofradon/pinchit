@@ -229,10 +229,20 @@ iframe, img, video {
 .img-wrapper {
   overflow: hidden;
   display: block;
+  position: relative;
 }
 
 .img-responsive {
   max-width: 100%;
   height: auto;
   display: block;
+}
+
+.event-target {
+  background-color: white;
+  max-height: 300px;
+  min-height: 100px;
+  font-size: 1rem;
+  color: #333;
+  overflow: scroll;
 }

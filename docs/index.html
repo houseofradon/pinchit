@@ -71,7 +71,7 @@
       </div>
       <pre><code class="language-js">import pinch from 'pinchit'
 
-document.addEventListener('DOMContentLoaded', function () {
+document.addEventListener('DOMContentLoaded', () => {
   const image = document.querySelector('img');
   pinch(image);
 });</code></pre>
@@ -94,7 +94,7 @@ document.addEventListener('DOMContentLoaded', function () {
       </div>
       <pre><code class="language-js">import pinch from 'pinchit'
 
-document.addEventListener('DOMContentLoaded', function () {
+document.addEventListener('DOMContentLoaded', () => {
   const image = document.querySelectorAll('img');
   pinch(image);
 });</code></pre>
@@ -112,7 +112,7 @@ document.addEventListener('DOMContentLoaded', function () {
       </div>
       <pre><code class="language-js">import pinch from 'pinchit'
 
-document.addEventListener('DOMContentLoaded', function () {
+document.addEventListener('DOMContentLoaded', () => {
   const image = document.querySelector('img');
   pinch(image, {
     maxScale: 4,
@@ -135,7 +135,7 @@ document.addEventListener('DOMContentLoaded', function () {
       <div class="reset-button">reset</div>
       <pre><code class="language-js">import pinch from 'pinchit'
 
-document.addEventListener('DOMContentLoaded', function () {
+document.addEventListener('DOMContentLoaded', () => {
   const image = document.querySelector('img');
   const pinchImage = pinch(image);
   document
@@ -143,6 +143,26 @@ document.addEventListener('DOMContentLoaded', function () {
     .addEventListener('click', () => {
       pinchImage.reset();
     })
+});</code></pre>
+    </section>
+  </div>
+  <div class="steps">
+    <section class="container">
+      <div class="step step-last">
+        <h4>Example: Events</h4>
+      </div>
+      <div class="img-example example-five">
+        <div class="img-wrapper">
+          <img src="assets/images/example-one.jpg" class="img-responsive" alt="">
+        </div>
+      </div>
+      <div class="event-target"></div>
+      <pre><code class="language-js">import pinch from 'pinchit'
+
+document.addEventListener('DOMContentLoaded', () => {
+  const image = document.querySelector('img');
+  const pinchImage = pinch(image);
+  pinchImage.on('touchmove', handelTouchMove)
 });</code></pre>
     </section>
   </div>
