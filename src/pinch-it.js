@@ -17,12 +17,12 @@ const pinchIt = (targets: string | Object, options: Object = {}) => {
   let scaling;
   let lastScale = 1;
   let startTouches;
-  let lastTouch;
 
   let zoomFactor = 1;
 
   let offset = { x: 0, y: 0 };
-  let lastZoomCenter = {}
+  let lastZoomCenter = false;
+  let lastDragPosition = false;
 
   const { on, dispatch } = eventDispatcher();
 
@@ -45,7 +45,9 @@ const pinchIt = (targets: string | Object, options: Object = {}) => {
     lastScale = 1;
     startTouches = null;
     zoomFactor = 1;
-    lastZoomCenter = {};
+    lastZoomCenter = false;
+
+    lastDragPosition = false;
     offset = { x: 0, y: 0 };
   };
 
@@ -78,11 +80,12 @@ const pinchIt = (targets: string | Object, options: Object = {}) => {
 
     if ((!scaling || !startTouches) && zoomFactor > 1) {
       cancelEvent(e);
+
       const touch = first(getTouches(Array.from(e.touches)));
-      const dragOffset = drag(touch, lastZoomCenter, offset);
+      const dragOffset = drag(touch, lastDragPosition, offset);
 
       offset = sanitizeOffset(e.target, dragOffset, zoomFactor);
-      lastZoomCenter = touch;
+      lastDragPosition = touch;
     } else if (scaling && startTouches) {
       cancelEvent(e);
 
@@ -96,12 +99,10 @@ const pinchIt = (targets: string | Object, options: Object = {}) => {
         y: (factor.scale - 1) * (touchCenter.y + offset.y)
       });
 
-      console.log('touchCenter', touchCenter);
-
       zoomFactor = factor.zoomFactor;
       lastScale = newScale;
-      lastZoomCenter = touchCenter;
       const dragOffset = drag(first(getTouches(Array.from(e.touches))), lastZoomCenter, offset);
+      lastZoomCenter = touchCenter;
       offset = sanitizeOffset(e.target, dragOffset, zoomFactor);
     }
 
@@ -113,10 +114,12 @@ const pinchIt = (targets: string | Object, options: Object = {}) => {
   const onTouchend = opts => (e: TouchEvent) => {
     dispatchPinchEvent('touchend', 'before', e);
 
+    lastDragPosition = false;
+    lastScale = 1;
+
     if (zoomFactor) {
       if (!isWithin(zoomFactor, opts)) {
         const isLessThan = (getInitialScale(e.target) * zoomFactor < opts.minScale);
-        lastScale = 1;
         zoomFactor = isLessThan ? opts.minScale : opts.maxScale;
         offset = sanitizeOffset(e.target, offset, zoomFactor);
         scaleElement(e.target, zoomFactor, offset, opts.snapBackSpeed, opts.ease);

@@ -7,10 +7,16 @@ const sum = (acc, next) => acc + next;
 /**
  * Calculates the average of multiple vectors (x, y values)
  */
-const getVectorAvg = (vectors) => ({
+const getVectorAvg = (vectors: Array<Object>) => ({
   x: vectors.map(v => (v.x)).reduce(sum) / vectors.length,
   y: vectors.map(v => (v.y)).reduce(sum) / vectors.length,
 });
+
+const getParentElement = (type: string) => (el: EventTarget): number => (
+  (el instanceof HTMLImageElement && el.parentElement instanceof HTMLDivElement)
+  ? el.parentElement[type]
+  : 1
+);
 
 /**
 isWithin - Check if value is between two values
@@ -29,6 +35,9 @@ export const getOffset = (lastOffset: Object, offset: Object) => ({
   y: lastOffset.y + offset.y,
 });
 
+export const getParentX = getParentElement('offsetWidth');
+export const getParentY = getParentElement('offsetHeight');
+
 /**
  * getScale - Check if value is between two values
  *
@@ -36,20 +45,8 @@ export const getOffset = (lastOffset: Object, offset: Object) => ({
  * @return { Number }
  **/
 export const getInitialScale = (el: EventTarget): number => (
-  (el instanceof HTMLImageElement && el.parentElement instanceof HTMLDivElement)
-  ? el.parentElement.offsetWidth / el.offsetWidth
-  : 1
-);
-
-export const getParentX = (el: EventTarget): number => (
-  (el instanceof HTMLImageElement && el.parentElement instanceof HTMLDivElement)
-  ? el.parentElement.offsetWidth
-  : 1
-);
-
-export const getParentY = (el: EventTarget): number => (
-  (el instanceof HTMLImageElement && el.parentElement instanceof HTMLDivElement)
-  ? el.parentElement.offsetHeight
+  (el instanceof HTMLImageElement)
+  ? getParentX(el) / el.offsetWidth
   : 1
 );
 
@@ -67,7 +64,7 @@ export const scaleFactor = (scale: number, factor: number, opts: Object) => {
   };
 };
 
-export const getTouchCenter = (touches: Array) => getVectorAvg(touches);
+export const getTouchCenter = (touches: Array<Object>) => getVectorAvg(touches);
 
 /**
  * calcScale - Calculate the distance between where we start our pinch
