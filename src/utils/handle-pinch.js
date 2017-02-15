@@ -7,12 +7,10 @@ const sum = (acc, next) => acc + next;
 /**
  * Calculates the average of multiple vectors (x, y values)
  */
-const getVectorAvg = (vectors) => {
-  return {
-    x: vectors.map(v => (v.x)).reduce(sum) / vectors.length,
-    y: vectors.map(v => (v.y)).reduce(sum) / vectors.length
-  };
-};
+const getVectorAvg = (vectors) => ({
+  x: vectors.map(v => (v.x)).reduce(sum) / vectors.length,
+  y: vectors.map(v => (v.y)).reduce(sum) / vectors.length,
+});
 
 /**
 isWithin - Check if value is between two values
@@ -25,6 +23,11 @@ export const isWithin = (scale: number, opts: Object): boolean => {
   const { maxScale, minScale } = opts;
   return (scale >= minScale) && (scale <= maxScale);
 };
+
+export const getOffset = (lastOffset: Object, offset: Object) => ({
+  x: lastOffset.x + offset.x,
+  y: lastOffset.y + offset.y,
+});
 
 /**
  * getScale - Check if value is between two values
