@@ -47,7 +47,7 @@ export const scaleFactor = (scale: number, factor: number, opts: Object) => {
   const originalFactor = factor;
   const zoomFactor = factor * scale;
   return {
-    zoomFactor,
+    zoomFactor: Math.min(opts.maxScale * 2, Math.max(zoomFactor, opts.minScale / 2)),
     scale: zoomFactor / originalFactor,
   };
 };
