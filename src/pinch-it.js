@@ -45,7 +45,6 @@ const pinchIt = (targets: string | Object, options: Object = {}) => {
     scaling = false;
     lastScale = 1;
     firstTouch = null;
-    lastTouch = null;
     zoomFactor = 1;
   };
 
