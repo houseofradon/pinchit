@@ -32,11 +32,23 @@ export const isWithin = (scale: number, opts: Object): boolean => {
  * @param { Node } el current scale value
  * @return { Number }
  **/
-export const getInitialScale = (el: HTMLImageElement): number => {
-  return (el instanceof HTMLImageElement && el.parentElement instanceof HTMLDivElement)
-    ? el.parentElement.offsetWidth / el.offsetWidth
-    : 1;
-};
+export const getInitialScale = (el: EventTarget): number => (
+  (el instanceof HTMLImageElement && el.parentElement instanceof HTMLDivElement)
+  ? el.parentElement.offsetWidth / el.offsetWidth
+  : 1
+);
+
+export const getParentX = (el: EventTarget): number => (
+  (el instanceof HTMLImageElement && el.parentElement instanceof HTMLDivElement)
+  ? el.parentElement.offsetWidth
+  : 1
+);
+
+export const getParentY = (el: EventTarget): number => (
+  (el instanceof HTMLImageElement && el.parentElement instanceof HTMLDivElement)
+  ? el.parentElement.offsetHeight
+  : 1
+);
 
 /**
  * Scales the zoom factor relative to current state
@@ -52,7 +64,7 @@ export const scaleFactor = (scale: number, factor: number, opts: Object) => {
   };
 };
 
-export const getTouchCenter = touches => getVectorAvg(touches);
+export const getTouchCenter = (touches: Array) => getVectorAvg(touches);
 
 /**
  * calcScale - Calculate the distance between where we start our pinch
@@ -66,6 +78,4 @@ export const calcScale = (startTouch: Array<Object>, endTouch: Array<Object>): n
   getDistance(getTouches(endTouch)) / getDistance(getTouches(startTouch))
 );
 
-export const calcNewScale = (to: number, lastScale: number = 1) => (
-  to / lastScale // + ((lastScale) - 1)
-);
+export const calcNewScale = (to: number, lastScale: number = 1) => to / lastScale;
