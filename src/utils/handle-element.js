@@ -28,8 +28,15 @@ export default (el: EventTarget, pinch: number, coords: Object, duration: number
   const { style } = el;
 
   const zoomFactor = getInitialScale(el) * pinch;
-  const offsetX = -coords.x / zoomFactor;
-  const offsetY = -coords.y / zoomFactor;
+
+  const offsetX = -coords.x;
+  const offsetY = -coords.y;
+
+  console.log('getInitialScale', getInitialScale(el));
+  console.log('pinch', pinch);
+  console.log('coords.x', coords.x);
+  console.log('offsetx', offsetX);
+  console.log('');
 
   handleAnimation(el, transition, duration, ease);
   const scaleProp = (hasScale3d)
