@@ -11,7 +11,7 @@ const first = (items: Array<Object>) => items[0];
 
 const pinchIt = (targets: string | Object, options: Object = {}) => {
   // private variable cache
-  let elements;
+  let elements = [];
 
   let scaling;
   let lastScale = 1;
@@ -40,7 +40,7 @@ const pinchIt = (targets: string | Object, options: Object = {}) => {
   };
 
   const resetGlobals = (/* opts */): void => {
-    scaling = false;
+    scaling = undefined;
     lastScale = 1;
     startTouches = null;
     zoomFactor = 1;
@@ -172,6 +172,8 @@ const pinchIt = (targets: string | Object, options: Object = {}) => {
     dispatchPinchEvent('destroy', 'before', {});
     // remove event listeners
     Array.from(elements).forEach(detachhEvents);
+    elements = [];
+    resetGlobals();
     dispatchPinchEvent('destroy', 'after', {});
   };
 
