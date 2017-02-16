@@ -1,7 +1,7 @@
 {
   "name": "pinchit",
   "description": "Zoom images without dependencies",
-  "main": "dist/pinchit.min.js",
+  "main": "dist/pinchit.js",
   "authors": [
     "Philip Knape"
   ],
@@ -19,7 +19,7 @@
     "Vanilla",
     "lean"
   ],
-  "version": "0.5.3",
+  "version": "0.5.4",
   "ignore": [
     "**/.*",
     "node_modules",
