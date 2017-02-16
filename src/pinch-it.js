@@ -1,8 +1,7 @@
 // @flow
 //
 import eventDispatcher from './utils/dispatch-event';
-import { detectDoubleTap } from './utils/detect-event';
-import { cancelEvent, getTouches } from './utils/handle-event';
+import { cancelEvent, getTouches, detectDoubleTap } from './utils/handle-event';
 import scaleElement from './utils/handle-element';
 import { isWithin, calcScale, calcNewScale, addOffset, getInitialScale, scaleFactor, getTouchCenter } from './utils/handle-pinch';
 import { drag, sanitizeOffset } from './utils/handle-drag';
