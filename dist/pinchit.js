@@ -681,7 +681,7 @@ exports.default = function () {
   (function () {
     var el = document.createElement('_');
     var style = el.style;
-		console.log(el);
+
     if (style.webkitTransition === '') {
       transitionEnd = 'webkitTransitionEnd';
       transition = 'webkitTransition';
@@ -703,7 +703,7 @@ exports.default = function () {
     if (style.transform === '') {
       transform = 'transform';
     }
-		console.log(document.body);
+
     document.body.insertBefore(el, null);
     style[transform] = 'translate3d(0, 0, 0)';
     hasScale3d = !!global.getComputedStyle(el).getPropertyValue(transform);
