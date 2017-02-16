@@ -195,6 +195,10 @@ iframe, img, video {
   }
 }
 
+div pre.language-markup, div pre.language-css {
+  margin-top: 30px;
+}
+
 .img-example {
   margin: 30px 0;
   border: #9E7780 10px solid;
@@ -244,5 +248,5 @@ iframe, img, video {
   min-height: 100px;
   font-size: 1rem;
   color: #333;
-  overflow: scroll;
+  overflow: auto;
 }
