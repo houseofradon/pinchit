@@ -1,4 +1,5 @@
 // @flow
+let lastTouchStart = 0;
 
 type TochPage = {
   pageX: number;
@@ -11,10 +12,10 @@ type Touch = {
 };
 
 /**
- *  cancelEvent - Cancel Events so we dont bubble up our events to the document
+ * cancelEvent - Cancel Events so we dont bubble up our events to the document
  *
- *  @param { Object } event
- *  @return { Void }
+ * @param { Object } event
+ * @return { Void }
  **/
 export const cancelEvent = (e: Event): void => {
   e.stopPropagation();
@@ -22,11 +23,36 @@ export const cancelEvent = (e: Event): void => {
 };
 
 /**
+ * detectDoubleTap - Check if we are double tapping
+ *
+ * @param { Object } event
+ * @return { Boolean }
+ **/
+export const detectDoubleTap = (e: TouchEvent): boolean => {
+  const time = (new Date()).getTime();
+
+  if (e.touches.length > 1) {
+    lastTouchStart = 0;
+  }
+
+  if (time - lastTouchStart < 300) {
+    cancelEvent(event);
+    return true;
+  }
+
+  if (e.touches.length === 1) {
+    lastTouchStart = time;
+  }
+  return false;
+};
+
+/**
  * Returns the touches of an event relative to the container offset
+ *
  * @param event
  * @return array touches
  */
-export const getTouches = (el, touches: Array<TochPage>): Array<Touch> => {
+export const getTouches = (el: EventTarget, touches: Array<TochPage>): Array<Touch> => {
   const position = el.parentElement.getBoundingClientRect();
   return touches.map(touch => ({
     x: touch.pageX - (position.left + document.body.scrollLeft),
