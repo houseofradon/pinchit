@@ -2,11 +2,11 @@
 	if(typeof exports === 'object' && typeof module === 'object')
 		module.exports = factory();
 	else if(typeof define === 'function' && define.amd)
-		define([], factory);
-	else {
-		var a = factory();
-		for(var i in a) (typeof exports === 'object' ? exports : root)[i] = a[i];
-	}
+		define("pinchit", [], factory);
+	else if(typeof exports === 'object')
+		exports["pinchit"] = factory();
+	else
+		root["pinchit"] = factory();
 })(this, function() {
 return /******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
@@ -681,7 +681,7 @@ exports.default = function () {
   (function () {
     var el = document.createElement('_');
     var style = el.style;
-
+		console.log(el);
     if (style.webkitTransition === '') {
       transitionEnd = 'webkitTransitionEnd';
       transition = 'webkitTransition';
@@ -703,7 +703,7 @@ exports.default = function () {
     if (style.transform === '') {
       transform = 'transform';
     }
-
+		console.log(document.body);
     document.body.insertBefore(el, null);
     style[transform] = 'translate3d(0, 0, 0)';
     hasScale3d = !!global.getComputedStyle(el).getPropertyValue(transform);
@@ -874,12 +874,6 @@ exports.default = function (el, pinch, coords, duration, ease) {
 
   var offsetX = -coords.x;
   var offsetY = -coords.y;
-
-  console.log('getInitialScale', (0, _handlePinch.getInitialScale)(el));
-  console.log('pinch', pinch);
-  console.log('coords.x', coords.x);
-  console.log('offsetx', offsetX);
-  console.log('');
 
   handleAnimation(el, transition, duration, ease);
   var scaleProp = hasScale3d ? 'scale3d(' + zoomFactor + ', ' + zoomFactor + ', 1)' : 'scale(' + zoomFactor + ', ' + zoomFactor + ')';

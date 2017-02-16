@@ -33,6 +33,8 @@ module.exports = {
     path: path.join(__dirname, '..', 'dist/'),
     filename: 'pinchit.min.js',
     libraryTarget: 'umd',
+    library: 'pinchit',
+    umdNamedDefine: true,
   },
 
   plugins: [
