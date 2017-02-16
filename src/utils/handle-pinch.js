@@ -7,7 +7,7 @@ const sum = (acc, next) => acc + next;
 /**
  * Calculates the average of multiple vectors (x, y values)
  */
-const getVectorAvg = (vectors: Array<Object>) => ({
+const getVectorAvg = (vectors: Array<Object>): Object => ({
   x: vectors.map(v => (v.x)).reduce(sum) / vectors.length,
   y: vectors.map(v => (v.y)).reduce(sum) / vectors.length,
 });
@@ -19,7 +19,7 @@ const getParentElement = (type: string) => (el: EventTarget): number => (
 );
 
 /**
-isWithin - Check if value is between two values
+ * isWithin - Check if value is between two values
  *
  * @param { Number } scale current scale value
  * @param { Object } minPinch, maxPinh
@@ -30,7 +30,14 @@ export const isWithin = (scale: number, opts: Object): boolean => {
   return (scale >= minScale) && (scale <= maxScale);
 };
 
-export const addOffset = (lastOffset: Object, offset: Object) => ({
+/**
+ * addOffset - Combine current offset with old offset and returns a new offset
+ *
+ * @param { Object } lastOffset last offset
+ * @param { Object } offset, new offset
+ * @return { Object }
+ **/
+export const addOffset = (lastOffset: Object, offset: Object): Object => ({
   x: lastOffset.x + offset.x,
   y: lastOffset.y + offset.y,
 });
@@ -52,10 +59,11 @@ export const getInitialScale = (el: EventTarget): number => (
 
 /**
  * Scales the zoom factor relative to current state
+ *
  * @param scale
  * @return the actual scale (can differ because of max min zoom factor)
  */
-export const scaleFactor = (scale: number, factor: number, opts: Object) => {
+export const scaleFactor = (scale: number, factor: number, opts: Object): Object => {
   const originalFactor = factor;
   let zoomFactor = factor * scale;
   const { maxScaleTimes, minScaleTimes } = opts;
@@ -71,7 +79,7 @@ export const scaleFactor = (scale: number, factor: number, opts: Object) => {
  * (used for reverse zoom)
  * @return {Object} the current zoom center
  */
-export const getCurrentZoomCenter = (el, zoomFactor, offset) => {
+export const getCurrentPinchCenter = (el: EventTarget, zoomFactor: number, offset: Object): Object => {
   const length = getParentX(el) * zoomFactor;
   const offsetLeft = offset.x;
   const offsetRight = length - offsetLeft - getParentX(el);
@@ -105,8 +113,10 @@ export const getTouchCenter = (touches: Array<Object>) => getVectorAvg(touches);
  * @param { Array } endTouch The current point of our touch
  * @return { Number }
  */
-export const calcScale = (el, startTouch: Array<Object>, endTouch: Array<Object>): number => (
+export const calcScale = (el: EventTarget, startTouch: Array<Object>, endTouch: Array<Object>): number => (
   getDistance(getTouches(el, endTouch)) / getDistance(getTouches(el, startTouch))
 );
 
-export const calcNewScale = (to: number, lastScale: number = 1) => to / lastScale;
+export const calcNewScale = (to: number, lastScale: number = 1): number => (
+  to / lastScale
+);
