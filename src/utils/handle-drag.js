@@ -7,9 +7,13 @@ type Center = {
   y: number;
 };
 
+const calcMax = (el: EventTarget, differ: number, zoomFactor: number): Object => ({
+  maxX: (zoomFactor - differ) * getParentX(el),
+  maxY: (zoomFactor - differ) * getParentY(el),
+});
+
 export const sanitizeOffset = (el: EventTarget, offset: Center, zoomFactor: number): Object => {
-  const maxX = (zoomFactor - 1) * getParentX(el) * zoomFactor;
-  const maxY = (zoomFactor - 1) * getParentY(el) * zoomFactor;
+  const { maxX, maxY } = calcMax(el, 1, zoomFactor);
   const maxOffsetX = Math.max(maxX, 0);
   const maxOffsetY = Math.max(maxY, 0);
   const minOffsetX = Math.min(maxX, 0);
@@ -21,11 +25,11 @@ export const sanitizeOffset = (el: EventTarget, offset: Center, zoomFactor: numb
   };
 };
 
-export const drag = (center: Center, lastCenter: Center, lastOffset: Object, zoomFactor) => (
+export const drag = (center: Center, lastCenter: Center, lastOffset: Object, zoomFactor: number): Object => (
   (Object.prototype.hasOwnProperty.call(lastCenter, 'x'))
   ? addOffset(lastOffset, {
-    x: -((center.x - lastCenter.x) * zoomFactor),
-    y: -((center.y - lastCenter.y) * zoomFactor),
+    x: -(((center.x - lastCenter.x) * zoomFactor) / zoomFactor),
+    y: -(((center.y - lastCenter.y) * zoomFactor) / zoomFactor),
   })
   : lastOffset
 );

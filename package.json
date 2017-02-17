@@ -1,6 +1,6 @@
 {
   "name": "pinchit",
-  "version": "0.5.1",
+  "version": "0.5.4",
   "description": "Zoom images without dependencies",
   "keywords": [
     "pinch",
@@ -16,11 +16,12 @@
   "scripts": {
     "clean": "node_modules/.bin/rimraf ./lib",
     "build:lib": "node_modules/.bin/babel src/ -d lib/",
-    "build": "npm run clean && npm run build:lib",
+    "build:dist": "node_modules/.bin/webpack --config ./webpack/webpack.prod.js",
+    "build": "npm run clean && npm run build:lib && npm run build:dist",
     "lint": "node_modules/.bin/eslint src/",
     "test": "node_modules/.bin/karma start test/karma.conf.js",
-    "demo:watch": "webpack-dev-server --inline --config webpack.config.js --content-base docs --port 3050 --host 0.0.0.0",
-    "demo:build": "NODE_ENV=production webpack",
+    "demo:watch": "webpack-dev-server --inline --config ./webpack/webpack.dev.js --content-base docs --port 3050 --host 0.0.0.0",
+    "demo:build": "NODE_ENV=development node_modules/.bin/webpack --config ./webpack/webpack.doc.js",
     "prepublish": "npm run lint && npm run build"
   },
   "devDependencies": {
@@ -60,6 +61,7 @@
     "sinon": "1.17.7",
     "sinon-chai": "^2.8.0",
     "style-loader": "^0.13.1",
+    "unminified-webpack-plugin": "^1.2.0",
     "webpack": "^2.2.1",
     "webpack-dev-server": "^2.3.0"
   },
@@ -71,10 +73,12 @@
   "bugs": {
     "url": "https://github.com/Knape/pinchit/issues"
   },
-  "licenses": [{
-    "type": "MIT",
-    "url": "https://raw.githubusercontent.com/Knape/pinchit/master/LICENSE"
-  }],
+  "licenses": [
+    {
+      "type": "MIT",
+      "url": "https://raw.githubusercontent.com/Knape/pinchit/master/LICENSE"
+    }
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/Knape/pinchit.git"

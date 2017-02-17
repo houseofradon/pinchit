@@ -82,6 +82,7 @@ const pinchIt = (targets: string | Object, options: Object = {}) => {
 
       const touch = first(getTouches(e.target, Array.from(e.touches)));
       const dragOffset = drag(touch, lastDragPosition, offset, zoomFactor);
+
       offset = sanitizeOffset(e.target, dragOffset, zoomFactor);
       lastDragPosition = touch;
     } else if (scaling && startTouches) {
@@ -93,7 +94,6 @@ const pinchIt = (targets: string | Object, options: Object = {}) => {
       const scale = calcNewScale(newScale, lastScale);
 
       const factor = scaleFactor(scale, zoomFactor, opts);
-
 
       offset = addOffset(offset, {
         x: (factor.scale - 1) * (touchCenter.x + offset.x),
@@ -117,7 +117,6 @@ const pinchIt = (targets: string | Object, options: Object = {}) => {
     lastDragPosition = false;
     lastZoomCenter = false;
     lastScale = 1;
-
     if (zoomFactor) {
       if (!isWithin(zoomFactor, opts)) {
         const isLessThan = (getInitialScale(e.target) * zoomFactor < opts.minScale);
