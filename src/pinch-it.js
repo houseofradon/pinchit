@@ -149,8 +149,8 @@ const pinchIt = (targets: string | Object, options: Object = {}) => {
    * @param { String } easing
    * @return { Void }
    */
-  const reset = (opt: Object) => (item: ?number): void => {
-    const { snapBackSpeed, easing } = {...defaults, ...opt};
+  const reset = (item: ?number): void => {
+    const { snapBackSpeed, easing } = opts;
 
     if (item && !isNaN(item) && elements[item]) {
       scaleElement(elements[item], 1, { x: 0, y: 0 }, snapBackSpeed, easing);
@@ -170,6 +170,7 @@ const pinchIt = (targets: string | Object, options: Object = {}) => {
    */
   const destroy = (): void => {
     dispatchPinchEvent('destroy', 'before', {});
+    reset();
     // remove event listeners
     Array.from(elements).forEach(detachhEvents);
     elements = [];
@@ -222,7 +223,7 @@ const pinchIt = (targets: string | Object, options: Object = {}) => {
 
   return {
     setup,
-    reset: reset(options),
+    reset,
     destroy,
     elements,
     on,
