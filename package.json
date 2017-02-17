@@ -17,7 +17,7 @@
     "clean": "node_modules/.bin/rimraf ./lib",
     "build:lib": "node_modules/.bin/babel src/ -d lib/",
     "build:dist": "node_modules/.bin/webpack --config ./webpack/webpack.prod.js",
-    "build": "npm run clean && npm run build:lib && npm run build:dist",
+    "build": "npm run clean && npm run build:lib && npm run build:dist && npm run demo:build",
     "lint": "node_modules/.bin/eslint src/",
     "test": "node_modules/.bin/karma start test/karma.conf.js",
     "demo:watch": "webpack-dev-server --inline --config ./webpack/webpack.dev.js --content-base docs --port 3050 --host 0.0.0.0",

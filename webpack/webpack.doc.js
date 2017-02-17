@@ -29,7 +29,7 @@ module.exports = {
   devtool: 'inline-source-map',
 
   output: {
-    path: path.join(__dirname, 'docs/js/'),
+    path: path.join(__dirname, '..', 'docs/js/'),
     filename: 'bundle.min.js',
     publicPath: '/js/'
   },

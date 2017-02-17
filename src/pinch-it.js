@@ -12,6 +12,7 @@ const first = (items: Array<Object>) => items[0];
 const pinchIt = (targets: string | Object, options: Object = {}) => {
   // private variable cache
   let elements = [];
+  let opts = {};
 
   let scaling;
   let lastScale = 1;
@@ -58,7 +59,7 @@ const pinchIt = (targets: string | Object, options: Object = {}) => {
    * private
    * @param { Object } e the event from our eventlistener
    */
-  const onTouchstart = (opts: Object) => (e: TouchEvent) => {
+  const onTouchstart = (e: TouchEvent) => {
     dispatchPinchEvent('touchstart', 'before', e);
 
 
@@ -74,7 +75,7 @@ const pinchIt = (targets: string | Object, options: Object = {}) => {
     dispatchPinchEvent('touchstart', 'after', e);
   };
 
-  const onTouchmove = (opts: Object) => (e: TouchEvent) => {
+  const onTouchmove = (e: TouchEvent) => {
     dispatchPinchEvent('touchmove', 'before', e);
 
     if ((!scaling || !startTouches) && zoomFactor > 1) {
@@ -111,7 +112,7 @@ const pinchIt = (targets: string | Object, options: Object = {}) => {
     dispatchPinchEvent('touchmove', 'after', e);
   };
 
-  const onTouchend = opts => (e: TouchEvent) => {
+  const onTouchend = (e: TouchEvent) => {
     dispatchPinchEvent('touchend', 'before', e);
 
     lastDragPosition = false;
@@ -129,10 +130,10 @@ const pinchIt = (targets: string | Object, options: Object = {}) => {
     dispatchPinchEvent('touchend', 'after', e);
   };
 
-  const attachEvents = opts => (el: HTMLElement) => {
-    el.addEventListener('touchstart', onTouchstart(opts));
-    el.addEventListener('touchmove', onTouchmove(opts));
-    el.addEventListener('touchend', onTouchend(opts));
+  const attachEvents = (el: HTMLElement) => {
+    el.addEventListener('touchstart', onTouchstart);
+    el.addEventListener('touchmove', onTouchmove);
+    el.addEventListener('touchend', onTouchend);
   };
 
   const detachhEvents = (el: Object) => {
@@ -195,7 +196,7 @@ const pinchIt = (targets: string | Object, options: Object = {}) => {
     dispatchPinchEvent('init', 'before', {});
 
     // Base configuration for the pinch instance
-    const opts = {...defaults, ...opt};
+    opts = {...defaults, ...opt};
 
     // resolve target
     // pinchit allows for both a node or a string to be passed
@@ -211,7 +212,7 @@ const pinchIt = (targets: string | Object, options: Object = {}) => {
         console.warn('missing target, either pass an node or a string');
     }
 
-    Array.from(elements).forEach(attachEvents(opts));
+    Array.from(elements).forEach(attachEvents);
 
     dispatchPinchEvent('init', 'after', {});
   };
