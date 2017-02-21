@@ -156,7 +156,10 @@ const pinchIt = (targets: string | Object, options: Object = {}) => {
   const reset = (): void => {
     if (!element) return;
     const { snapBackSpeed, easing } = opts;
-    scaleElement(element, 1, { x: 0, y: 0 }, snapBackSpeed, easing);
+    console.log('reset?');
+    const image = element.querySelector('img');
+    console.log(image);
+    scaleElement(element, image, 1, { x: 0, y: 0 }, snapBackSpeed, easing);
     resetGlobals();
   };
 
