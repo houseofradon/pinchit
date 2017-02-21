@@ -4,15 +4,14 @@ import 'prismjs/themes/prism.css';
 import handleEvent from './handle-event';
 import pinchIt from '../src/';
 
-pinchIt('.example-one img');
-pinchIt('.example-two img');
-pinchIt('.example-tree img', {
+pinchIt('.example-one .img-wrapper');
+pinchIt('.example-tree .img-wrapper', {
   maxScale: 4,
   minScale: 0.5,
   snapBackSpeed: 500,
 });
 
-const pinchImage = pinchIt('.example-four img', {
+const pinchImage = pinchIt('.example-four .img-wrapper', {
   snapBackSpeed: 1000,
 });
 
@@ -24,7 +23,8 @@ document
 
 const target = document.querySelector('.event-target');
 const handleEventExample = handleEvent(target);
-const pinchEvent = pinchIt('.example-five img', {
+const pinchEvent = pinchIt('.example-five .img-wrapper', {
+  target: 'img',
   snapBackSpeed: 1000,
 });
 

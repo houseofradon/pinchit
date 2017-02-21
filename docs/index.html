@@ -10,7 +10,6 @@
     <div class="header-container container">
       <h1 class="header-heading">Pinch<span class="header-heading-suffix">.it</span></h1>
       <h2 class="header-tagline">Modern, tiny library for zooming images without dependencies by <a class="header-tagline-link" href="https://github.com/knape" target="_blank">knape</a>.</h2>
-      <h2 class="header-tagline">Proper documentation and examples comming soon</h2>
       <div class="header-social">
         <a class="header-social-link" href="https://github.com/knape/pinchit" target="_blank">
           <img class="header-social-link-icon" src="assets/images/icon-github.svg"> <span class="header-social-link-text">Documentation on GitHub</span>
@@ -72,31 +71,8 @@
       <pre><code class="language-js">import pinch from 'pinchit'
 
 document.addEventListener('DOMContentLoaded', () => {
-  const image = document.querySelector('img');
-  pinch(image);
-});</code></pre>
-    </section>
-  </div>
-  <div class="steps">
-    <section class="container">
-      <div class="step step-last">
-        <h4>Example: Multiple elements</h4>
-      </div>
-      <div class="img-example example-two">
-        <div class="img-wrapper">
-          <img src="assets/images/example-two-first.jpg" class="img-responsive" alt="">
-        </div>
-      </div>
-      <div class="img-example example-two">
-        <div class="img-wrapper">
-          <img src="assets/images/example-two-second.jpg" class="img-responsive" alt="">
-        </div>
-      </div>
-      <pre><code class="language-js">import pinch from 'pinchit'
-
-document.addEventListener('DOMContentLoaded', () => {
-  const image = document.querySelectorAll('img');
-  pinch(image);
+  const wrapper = document.querySelector('.img-wrapper');
+  pinch(wrapper);
 });</code></pre>
     </section>
   </div>
@@ -113,8 +89,8 @@ document.addEventListener('DOMContentLoaded', () => {
       <pre><code class="language-js">import pinch from 'pinchit'
 
 document.addEventListener('DOMContentLoaded', () => {
-  const image = document.querySelector('img');
-  pinch(image, {
+  const wrapper = document.querySelector('.img-wrapper');
+  pinch(wrapper, {
     maxScale: 4,
     minScale: 0.5,
     snapBackSpeed: 500,
@@ -136,8 +112,8 @@ document.addEventListener('DOMContentLoaded', () => {
       <pre><code class="language-js">import pinch from 'pinchit'
 
 document.addEventListener('DOMContentLoaded', () => {
-  const image = document.querySelector('img');
-  const pinchImage = pinch(image);
+  const wrapper = document.querySelector('.img-wrapper');
+  const pinchImage = pinch(wrapper);
   document
     .querySelector('.reset-button')
     .addEventListener('click', () => {
@@ -160,8 +136,8 @@ document.addEventListener('DOMContentLoaded', () => {
       <pre><code class="language-js">import pinch from 'pinchit'
 
 document.addEventListener('DOMContentLoaded', () => {
-  const image = document.querySelector('img');
-  const pinchImage = pinch(image);
+  const wrapper = document.querySelector('.img-wrapper');
+  const pinchImage = pinch(wrapper);
   pinchImage.on('touchmove', handelTouchMove)
 });</code></pre>
     </section>
