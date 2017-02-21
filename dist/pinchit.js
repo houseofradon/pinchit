@@ -86,10 +86,6 @@ return /******/ (function(modules) { // webpackBootstrap
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.calcNewScale = exports.calcScale = exports.getTouchCenter = exports.getCurrentPinchCenter = exports.scaleFactor = exports.getInitialScale = exports.getParentY = exports.getParentX = exports.addOffset = exports.isWithin = undefined;
-
-var _handleEvent = __webpack_require__(1);
-
 var sum = function sum(acc, next) {
   return acc + next;
 };
@@ -97,8 +93,6 @@ var sum = function sum(acc, next) {
 /**
  * Calculates the average of multiple vectors (x, y values)
  */
-
-
 var getVectorAvg = function getVectorAvg(vectors) {
   return {
     x: vectors.map(function (v) {
@@ -110,9 +104,9 @@ var getVectorAvg = function getVectorAvg(vectors) {
   };
 };
 
-var getParentElement = function getParentElement(type) {
+var getElement = function getElement(type) {
   return function (el) {
-    return el instanceof HTMLImageElement && el.parentElement instanceof HTMLDivElement ? el.parentElement[type] : 1;
+    return el instanceof HTMLImageElement ? el[type] : 1;
   };
 };
 
@@ -144,8 +138,8 @@ var addOffset = exports.addOffset = function addOffset(lastOffset, offset) {
   };
 };
 
-var getParentX = exports.getParentX = getParentElement('offsetWidth');
-var getParentY = exports.getParentY = getParentElement('offsetHeight');
+var getX = exports.getX = getElement('offsetWidth');
+var getY = exports.getY = getElement('offsetHeight');
 
 /**
  * getScale - Check if value is between two values
@@ -153,8 +147,8 @@ var getParentY = exports.getParentY = getParentElement('offsetHeight');
  * @param { Node } el current scale value
  * @return { Number }
  **/
-var getInitialScale = exports.getInitialScale = function getInitialScale(el) {
-  return el instanceof HTMLImageElement ? getParentX(el) / el.offsetWidth : 1;
+var getInitialScale = exports.getInitialScale = function getInitialScale(el, image) {
+  return el instanceof HTMLImageElement ? getX(el) / image.offsetWidth : 1;
 };
 
 /**
@@ -163,66 +157,32 @@ var getInitialScale = exports.getInitialScale = function getInitialScale(el) {
  * @param scale
  * @return the actual scale (can differ because of max min zoom factor)
  */
-var scaleFactor = exports.scaleFactor = function scaleFactor(scale, factor, opts) {
+var getScaleFactor = exports.getScaleFactor = function getScaleFactor(scale, factor, opts) {
   var originalFactor = factor;
   var zoomFactor = factor * scale;
   var maxScaleTimes = opts.maxScaleTimes,
       minScaleTimes = opts.minScaleTimes;
 
   zoomFactor = Math.min(maxScaleTimes, Math.max(zoomFactor, minScaleTimes));
-  return {
-    zoomFactor: zoomFactor,
-    scale: zoomFactor / originalFactor
-  };
+  return zoomFactor / originalFactor;
 };
 
 /**
- * Calculates the virtual zoom center for the current offset and zoom factor
- * (used for reverse zoom)
- * @return {Object} the current zoom center
+ * Scales the zoom factor relative to current state
+ *
+ * @param scale
+ * @return the actual scale (can differ because of max min zoom factor)
  */
-var getCurrentPinchCenter = exports.getCurrentPinchCenter = function getCurrentPinchCenter(el, zoomFactor, offset) {
-  var length = getParentX(el) * zoomFactor;
-  var offsetLeft = offset.x;
-  var offsetRight = length - offsetLeft - getParentX(el);
-  var widthOffsetRatio = offsetLeft / offsetRight;
-  var centerX = widthOffsetRatio * getParentX(el) / (widthOffsetRatio + 1);
+var getZoomFactor = exports.getZoomFactor = function getZoomFactor(scale, factor, opts) {
+  var zoomFactor = factor * scale;
+  var maxScaleTimes = opts.maxScaleTimes,
+      minScaleTimes = opts.minScaleTimes;
 
-  // the same for the zoomcenter y
-  var height = getParentY(el) * zoomFactor;
-  var offsetTop = offset.y;
-  var offsetBottom = height - offsetTop - getParentY(el);
-  var heightOffsetRatio = offsetTop / offsetBottom;
-  var centerY = heightOffsetRatio * getParentY(el) / (heightOffsetRatio + 1);
-
-  // prevents division by zero
-  if (offsetRight === 0) {
-    centerX = getParentX(el);
-  }
-  if (offsetBottom === 0) {
-    centerY = getParentY(el);
-  }
-
-  return {
-    x: centerX,
-    y: centerY
-  };
+  return zoomFactor = Math.min(maxScaleTimes, Math.max(zoomFactor, minScaleTimes));
 };
 
 var getTouchCenter = exports.getTouchCenter = function getTouchCenter(touches) {
   return getVectorAvg(touches);
-};
-
-/**
- * calcScale - Calculate the distance between where we start our pinch
- * to where we end it
- *
- * @param { Array } startTouch The starting point of our touch
- * @param { Array } endTouch The current point of our touch
- * @return { Number }
- */
-var calcScale = exports.calcScale = function calcScale(el, startTouch, endTouch) {
-  return (0, _handleEvent.getDistance)((0, _handleEvent.getTouches)(el, endTouch)) / (0, _handleEvent.getDistance)((0, _handleEvent.getTouches)(el, startTouch));
 };
 
 var calcNewScale = exports.calcNewScale = function calcNewScale(to) {
@@ -241,87 +201,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
-
-var lastTouchStart = 0;
-
-/**
- * cancelEvent - Cancel Events so we dont bubble up our events to the document
- *
- * @param { Object } event
- * @return { Void }
- **/
-var cancelEvent = exports.cancelEvent = function cancelEvent(e) {
-  e.stopPropagation();
-  e.preventDefault();
-};
-
-/**
- * detectDoubleTap - Check if we are double tapping
- *
- * @param { Object } event
- * @return { Boolean }
- **/
-var detectDoubleTap = exports.detectDoubleTap = function detectDoubleTap(e) {
-  var time = new Date().getTime();
-
-  if (e.touches.length > 1) {
-    lastTouchStart = 0;
-  }
-
-  if (time - lastTouchStart < 300) {
-    cancelEvent(event);
-    return true;
-  }
-
-  if (e.touches.length === 1) {
-    lastTouchStart = time;
-  }
-  return false;
-};
-
-/**
- * Returns the touches of an event relative to the container offset
- *
- * @param event
- * @return array touches
- */
-var getTouches = exports.getTouches = function getTouches(el, touches) {
-  var position = el.parentElement.getBoundingClientRect();
-  return touches.map(function (touch) {
-    return {
-      x: touch.pageX - (position.left + document.body.scrollLeft),
-      y: touch.pageY - (position.top + document.body.scrollTop)
-    };
-  });
-};
-
-/**
- * getDistance - Calculate the distance between our fingers
- *
- * @param { Array } touches touches passas an array from TouchList
- * @return { Number } the calcualted distance between the fingers
- **/
-var getDistance = exports.getDistance = function getDistance(touches) {
-  var _touches = _slicedToArray(touches, 2),
-      first = _touches[0],
-      second = _touches[1];
-
-  return Math.sqrt((first.x - second.x) * (first.x - second.x) + (first.y - second.y) * (first.y - second.y));
-};
-
-/***/ }),
-/* 2 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _pinchIt = __webpack_require__(4);
+var _pinchIt = __webpack_require__(3);
 
 var _pinchIt2 = _interopRequireDefault(_pinchIt);
 
@@ -330,7 +210,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 exports.default = _pinchIt2.default;
 
 /***/ }),
-/* 3 */
+/* 2 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -387,7 +267,7 @@ exports.default = {
 };
 
 /***/ }),
-/* 4 */
+/* 3 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -403,21 +283,21 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 //
 
 
-var _dispatchEvent = __webpack_require__(6);
+var _dispatchEvent = __webpack_require__(5);
 
 var _dispatchEvent2 = _interopRequireDefault(_dispatchEvent);
 
-var _handleEvent = __webpack_require__(1);
+var _handleEvent = __webpack_require__(8);
 
-var _handleElement = __webpack_require__(8);
+var _handleElement = __webpack_require__(7);
 
 var _handleElement2 = _interopRequireDefault(_handleElement);
 
 var _handlePinch = __webpack_require__(0);
 
-var _handleDrag = __webpack_require__(7);
+var _handleDrag = __webpack_require__(6);
 
-var _defaults = __webpack_require__(3);
+var _defaults = __webpack_require__(2);
 
 var _defaults2 = _interopRequireDefault(_defaults);
 
@@ -431,8 +311,7 @@ var pinchIt = function pinchIt(targets) {
   var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
   // private variable cache
-  var elements = [];
-  var opts = {};
+  var element = null;
 
   var scaling = void 0;
   var lastScale = 1;
@@ -443,6 +322,9 @@ var pinchIt = function pinchIt(targets) {
   var offset = { x: 0, y: 0 };
   var lastZoomCenter = false;
   var lastDragPosition = false;
+
+  // Base configuration for the pinch instance
+  var opts = _extends({}, _defaults2.default, options);
 
   var _eventDispatcher = (0, _dispatchEvent2.default)(),
       on = _eventDispatcher.on,
@@ -493,7 +375,8 @@ var pinchIt = function pinchIt(targets) {
     lastScale = 1;
 
     if ((0, _handleEvent.detectDoubleTap)(e)) {
-      (0, _handleElement2.default)(e.target, 1, { x: 0, y: 0 }, opts.snapBackSpeed, opts.ease);
+      var image = e.currentTarget.querySelector('img');
+      (0, _handleElement2.default)(e.target, image, 1, { x: 0, y: 0 }, opts.snapBackSpeed, opts.ease);
       resetGlobals();
     }
 
@@ -506,7 +389,7 @@ var pinchIt = function pinchIt(targets) {
     if ((!scaling || !startTouches) && zoomFactor > 1) {
       (0, _handleEvent.cancelEvent)(e);
 
-      var touch = first((0, _handleEvent.getTouches)(e.target, Array.from(e.touches)));
+      var touch = first((0, _handleEvent.getTouches)(e.currentTarget, Array.from(e.touches)));
       var dragOffset = (0, _handleDrag.drag)(touch, lastDragPosition, offset, zoomFactor);
 
       offset = (0, _handleDrag.sanitizeOffset)(e.target, dragOffset, zoomFactor);
@@ -515,24 +398,25 @@ var pinchIt = function pinchIt(targets) {
       (0, _handleEvent.cancelEvent)(e);
 
       // a relative scale factor is used
-      var touchCenter = (0, _handlePinch.getTouchCenter)((0, _handleEvent.getTouches)(e.target, Array.from(e.touches)));
-      var newScale = (0, _handlePinch.calcScale)(e.target, startTouches, Array.from(e.touches));
-      var scale = (0, _handlePinch.calcNewScale)(newScale, lastScale);
+      var touchCenter = (0, _handlePinch.getTouchCenter)((0, _handleEvent.getTouches)(e.currentTarget, Array.from(e.touches)));
+      var newScale = (0, _handleEvent.calcScale)(e.currentTarget, startTouches, Array.from(e.touches));
+      var scaleValue = (0, _handlePinch.calcNewScale)(newScale, lastScale);
 
-      var factor = (0, _handlePinch.scaleFactor)(scale, zoomFactor, opts);
+      var scale = (0, _handlePinch.getScaleFactor)(scaleValue, zoomFactor, opts);
+      zoomFactor = (0, _handlePinch.getZoomFactor)(scaleValue, zoomFactor, opts);
 
       offset = (0, _handlePinch.addOffset)(offset, {
-        x: (factor.scale - 1) * (touchCenter.x + offset.x),
-        y: (factor.scale - 1) * (touchCenter.y + offset.y)
+        x: (scale - 1) * (touchCenter.x + offset.x),
+        y: (scale - 1) * (touchCenter.y + offset.y)
       });
 
-      zoomFactor = factor.zoomFactor;
       lastScale = newScale;
       offset = (0, _handleDrag.drag)(touchCenter, lastZoomCenter, offset, zoomFactor);
       lastZoomCenter = touchCenter;
     }
 
-    (0, _handleElement2.default)(e.target, zoomFactor, offset, 0, opts.ease);
+    var image = e.currentTarget.querySelector('img');
+    (0, _handleElement2.default)(e.target, image, zoomFactor, offset, 0, opts.ease);
 
     dispatchPinchEvent('touchmove', 'after', e);
   };
@@ -545,10 +429,11 @@ var pinchIt = function pinchIt(targets) {
     lastScale = 1;
     if (zoomFactor) {
       if (!(0, _handlePinch.isWithin)(zoomFactor, opts)) {
-        var isLessThan = (0, _handlePinch.getInitialScale)(e.target) * zoomFactor < opts.minScale;
+        var image = e.currentTarget.querySelector('img');
+        var isLessThan = (0, _handlePinch.getInitialScale)(e.target, image) * zoomFactor < opts.minScale;
         zoomFactor = isLessThan ? opts.minScale : opts.maxScale;
         offset = (0, _handleDrag.sanitizeOffset)(e.target, offset, zoomFactor);
-        (0, _handleElement2.default)(e.target, zoomFactor, offset, opts.snapBackSpeed, opts.ease);
+        (0, _handleElement2.default)(e.target, image, zoomFactor, offset, opts.snapBackSpeed, opts.ease);
       }
     }
 
@@ -574,22 +459,16 @@ var pinchIt = function pinchIt(targets) {
    * @param { String } easing
    * @return { Void }
    */
-  var reset = function reset(opt) {
-    return function (item) {
-      var _defaults$opt = _extends({}, _defaults2.default, opt),
-          snapBackSpeed = _defaults$opt.snapBackSpeed,
-          easing = _defaults$opt.easing;
+  var reset = function reset() {
+    if (!element) return;
+    var snapBackSpeed = opts.snapBackSpeed,
+        easing = opts.easing;
 
-      if (item && !isNaN(item) && elements[item]) {
-        (0, _handleElement2.default)(elements[item], 1, { x: 0, y: 0 }, snapBackSpeed, easing);
-      } else {
-        Array.from(elements).forEach(function (el) {
-          return (0, _handleElement2.default)(el, 1, { x: 0, y: 0 }, snapBackSpeed, easing);
-        });
-      }
-
-      resetGlobals();
-    };
+    console.log('reset?');
+    var image = element.querySelector('img');
+    console.log(image);
+    (0, _handleElement2.default)(element, image, 1, { x: 0, y: 0 }, snapBackSpeed, easing);
+    resetGlobals();
   };
 
   /**
@@ -599,9 +478,11 @@ var pinchIt = function pinchIt(targets) {
    */
   var destroy = function destroy() {
     dispatchPinchEvent('destroy', 'before', {});
+    if (!element) return;
+    reset();
     // remove event listeners
-    Array.from(elements).forEach(detachhEvents);
-    elements = [];
+    detachhEvents(element);
+    element = null;
     resetGlobals();
     dispatchPinchEvent('destroy', 'after', {});
   };
@@ -612,41 +493,39 @@ var pinchIt = function pinchIt(targets) {
    * @param { String, Object }
    * @return { Void }
    **/
-
-  var setup = function setup(target, opt) {
-    if (elements) destroy();
+  var setup = function setup(target) {
+    if (element) destroy();
     dispatchPinchEvent('init', 'before', {});
-
-    // Base configuration for the pinch instance
-    opts = _extends({}, _defaults2.default, opt);
-
     // resolve target
     // pinchit allows for both a node or a string to be passed
     switch (typeof target === 'undefined' ? 'undefined' : _typeof(target)) {
       case 'object':
-        elements = Array.isArray(target) ? target : [target];
+        element = target;
         break;
       case 'string':
-        elements = document.querySelectorAll(target);
+        element = document.querySelector(target);
         break;
       default:
-        elements = [];
+        element = null;
         console.warn('missing target, either pass an node or a string');
     }
 
-    Array.from(elements).forEach(attachEvents);
+    if (element) {
+      console.log(element);
+      attachEvents(element);
+    }
 
     dispatchPinchEvent('init', 'after', {});
   };
 
   // trigger initial setup
-  setup(targets, options);
+  setup(targets);
 
   return {
     setup: setup,
-    reset: reset(options),
+    reset: reset,
     destroy: destroy,
-    elements: elements,
+    element: element,
     on: on
   };
 };
@@ -654,7 +533,7 @@ var pinchIt = function pinchIt(targets) {
 exports.default = pinchIt;
 
 /***/ }),
-/* 5 */
+/* 4 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -715,7 +594,7 @@ exports.default = function () {
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(9)))
 
 /***/ }),
-/* 6 */
+/* 5 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -775,7 +654,7 @@ var eventDispatcher = function eventDispatcher() {
 exports.default = eventDispatcher;
 
 /***/ }),
-/* 7 */
+/* 6 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -790,8 +669,8 @@ var _handlePinch = __webpack_require__(0);
 
 var calcMax = function calcMax(el, differ, zoomFactor) {
   return {
-    maxX: (zoomFactor - differ) * (0, _handlePinch.getParentX)(el),
-    maxY: (zoomFactor - differ) * (0, _handlePinch.getParentY)(el)
+    maxX: (zoomFactor - differ) * (0, _handlePinch.getX)(el),
+    maxY: (zoomFactor - differ) * (0, _handlePinch.getY)(el)
   };
 };
 
@@ -819,7 +698,7 @@ var drag = exports.drag = function drag(center, lastCenter, lastOffset, zoomFact
 };
 
 /***/ }),
-/* 8 */
+/* 7 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -829,7 +708,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _detectPrefixes = __webpack_require__(5);
+var _detectPrefixes = __webpack_require__(4);
 
 var _detectPrefixes2 = _interopRequireDefault(_detectPrefixes);
 
@@ -858,23 +737,115 @@ var handleAnimation = function handleAnimation(el, transition, duration, ease) {
  * @return { Void }
  */
 
-exports.default = function (el, pinch, coords, duration, ease) {
+exports.default = function (el, image, pinch, coords, duration, ease) {
   var transition = prefixes.transition,
       transform = prefixes.transform,
       hasScale3d = prefixes.hasScale3d;
-  var style = el.style;
+  var style = image.style;
 
 
-  var zoomFactor = (0, _handlePinch.getInitialScale)(el) * pinch;
+  var zoomFactor = (0, _handlePinch.getInitialScale)(el, image) * pinch;
 
   var offsetX = -coords.x;
   var offsetY = -coords.y;
 
-  handleAnimation(el, transition, duration, ease);
+  handleAnimation(image, transition, duration, ease);
   var scaleProp = hasScale3d ? 'scale3d(' + zoomFactor + ', ' + zoomFactor + ', 1)' : 'scale(' + zoomFactor + ', ' + zoomFactor + ')';
   var translateProp = 'translate(' + offsetX + 'px, ' + offsetY + 'px)';
 
   style[transform] = translateProp + ' ' + scaleProp;
+};
+
+/***/ }),
+/* 8 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
+
+var lastTouchStart = 0;
+
+/**
+ * cancelEvent - Cancel Events so we dont bubble up our events to the document
+ *
+ * @param { Object } event
+ * @return { Void }
+ **/
+var cancelEvent = exports.cancelEvent = function cancelEvent(e) {
+  e.stopPropagation();
+  e.preventDefault();
+};
+
+/**
+ * detectDoubleTap - Check if we are double tapping
+ *
+ * @param { Object } event
+ * @return { Boolean }
+ **/
+var detectDoubleTap = exports.detectDoubleTap = function detectDoubleTap(e) {
+  var time = new Date().getTime();
+
+  if (e.touches.length > 1) {
+    lastTouchStart = 0;
+  }
+
+  if (time - lastTouchStart < 300) {
+    cancelEvent(event);
+    return true;
+  }
+
+  if (e.touches.length === 1) {
+    lastTouchStart = time;
+  }
+  return false;
+};
+
+/**
+ * Returns the touches of an event relative to the container offset
+ *
+ * @param event
+ * @return array touches
+ */
+var getTouches = exports.getTouches = function getTouches(el, touches) {
+  var position = el.getBoundingClientRect();
+  return touches.map(function (touch) {
+    return {
+      x: touch.pageX - (position.left + document.body.scrollLeft),
+      y: touch.pageY - (position.top + document.body.scrollTop)
+    };
+  });
+};
+
+/**
+ * getDistance - Calculate the distance between our fingers
+ *
+ * @param { Array } touches touches passas an array from TouchList
+ * @return { Number } the calcualted distance between the fingers
+ **/
+var getDistance = exports.getDistance = function getDistance(touches) {
+  var _touches = _slicedToArray(touches, 2),
+      first = _touches[0],
+      second = _touches[1];
+
+  return Math.sqrt((first.x - second.x) * (first.x - second.x) + (first.y - second.y) * (first.y - second.y));
+};
+
+/**
+ * calcScale - Calculate the distance between where we start our pinch
+ * to where we end it
+ *
+ * @param { Array } startTouch The starting point of our touch
+ * @param { Array } endTouch The current point of our touch
+ * @return { Number }
+ */
+var calcScale = exports.calcScale = function calcScale(el, startTouch, endTouch) {
+  return getDistance(getTouches(el, endTouch)) / getDistance(getTouches(el, startTouch));
 };
 
 /***/ }),
@@ -908,7 +879,7 @@ module.exports = g;
 /* 10 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(2);
+module.exports = __webpack_require__(1);
 
 
 /***/ })
