@@ -53,7 +53,7 @@ export const detectDoubleTap = (e: TouchEvent): boolean => {
  * @return array touches
  */
 export const getTouches = (el: EventTarget, touches: Array<TochPage>): Array<Touch> => {
-  const position = el.parentElement.getBoundingClientRect();
+  const position = el.getBoundingClientRect();
   return touches.map(touch => ({
     x: touch.pageX - (position.left + document.body.scrollLeft),
     y: touch.pageY - (position.top + document.body.scrollTop),
@@ -73,3 +73,15 @@ export const getDistance = (touches: Array<Touch>): number => {
     ((first.y - second.y) * (first.y - second.y))
   );
 };
+
+/**
+ * calcScale - Calculate the distance between where we start our pinch
+ * to where we end it
+ *
+ * @param { Array } startTouch The starting point of our touch
+ * @param { Array } endTouch The current point of our touch
+ * @return { Number }
+ */
+export const calcScale = (el: EventTarget, startTouch: Array<Object>, endTouch: Array<Object>): number => (
+  getDistance(getTouches(el, endTouch)) / getDistance(getTouches(el, startTouch))
+);

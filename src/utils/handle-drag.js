@@ -1,6 +1,6 @@
 // @flow
 
-import { getParentX, getParentY, addOffset } from './handle-pinch';
+import { getX, getY, addOffset } from './handle-pinch';
 
 type Center = {
   x: number;
@@ -8,8 +8,8 @@ type Center = {
 };
 
 const calcMax = (el: EventTarget, differ: number, zoomFactor: number): Object => ({
-  maxX: (zoomFactor - differ) * getParentX(el),
-  maxY: (zoomFactor - differ) * getParentY(el),
+  maxX: (zoomFactor - differ) * getX(el),
+  maxY: (zoomFactor - differ) * getY(el),
 });
 
 export const sanitizeOffset = (el: EventTarget, offset: Center, zoomFactor: number): Object => {

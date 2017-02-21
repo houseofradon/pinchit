@@ -5,7 +5,7 @@ import { getInitialScale } from './handle-pinch';
 
 const prefixes = detectPrefixes();
 
-const handleAnimation = (el: EventTarget, transition: string, duration: number, ease: string): void => {
+const handleAnimation = (el: HTMLElement, transition: string, duration: number, ease: string): void => {
   const { style } = el;
   style.transformOrigin = '0% 0%';
   style[`${transition}TimingFunction`] = ease;
@@ -23,16 +23,16 @@ const handleAnimation = (el: EventTarget, transition: string, duration: number, 
  * @return { Void }
  */
 
-export default (el: EventTarget, pinch: number, coords: Object, duration: number, ease: string): void => {
+export default (el: HTMLElement, image: HTMLElement, pinch: number, coords: Object, duration: number, ease: string): void => {
   const { transition, transform, hasScale3d } = prefixes;
-  const { style } = el;
+  const { style } = image;
 
-  const zoomFactor = getInitialScale(el) * pinch;
+  const zoomFactor = getInitialScale(el, image) * pinch;
 
   const offsetX = -coords.x;
   const offsetY = -coords.y;
 
-  handleAnimation(el, transition, duration, ease);
+  handleAnimation(image, transition, duration, ease);
   const scaleProp = (hasScale3d)
     ? `scale3d(${zoomFactor}, ${zoomFactor}, 1)`
     : `scale(${zoomFactor}, ${zoomFactor})`;

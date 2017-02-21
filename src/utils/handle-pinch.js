@@ -1,7 +1,5 @@
 // @flow
 
-import { getDistance, getTouches } from './handle-event';
-
 const sum = (acc, next) => acc + next;
 
 /**
@@ -12,9 +10,9 @@ const getVectorAvg = (vectors: Array<Object>): Object => ({
   y: vectors.map(v => (v.y)).reduce(sum) / vectors.length,
 });
 
-const getParentElement = (type: string) => (el: EventTarget): number => (
-  (el instanceof HTMLImageElement && el.parentElement instanceof HTMLDivElement)
-  ? el.parentElement[type]
+const getElement = (type: string) => (el: EventTarget): number => (
+  (el instanceof HTMLImageElement)
+  ? el[type]
   : 1
 );
 
@@ -42,8 +40,8 @@ export const addOffset = (lastOffset: Object, offset: Object): Object => ({
   y: lastOffset.y + offset.y,
 });
 
-export const getParentX = getParentElement('offsetWidth');
-export const getParentY = getParentElement('offsetHeight');
+export const getX = getElement('offsetWidth');
+export const getY = getElement('offsetHeight');
 
 /**
  * getScale - Check if value is between two values
@@ -51,9 +49,9 @@ export const getParentY = getParentElement('offsetHeight');
  * @param { Node } el current scale value
  * @return { Number }
  **/
-export const getInitialScale = (el: EventTarget): number => (
+export const getInitialScale = (el: EventTarget, image: HTMLElement): number => (
   (el instanceof HTMLImageElement)
-  ? getParentX(el) / el.offsetWidth
+  ? getX(el) / image.offsetWidth
   : 1
 );
 
@@ -63,59 +61,27 @@ export const getInitialScale = (el: EventTarget): number => (
  * @param scale
  * @return the actual scale (can differ because of max min zoom factor)
  */
-export const scaleFactor = (scale: number, factor: number, opts: Object): Object => {
+export const getScaleFactor = (scale: number, factor: number, opts: Object): Object => {
   const originalFactor = factor;
   let zoomFactor = factor * scale;
   const { maxScaleTimes, minScaleTimes } = opts;
   zoomFactor = Math.min(maxScaleTimes, Math.max(zoomFactor, minScaleTimes));
-  return {
-    zoomFactor,
-    scale: zoomFactor / originalFactor,
-  };
+  return zoomFactor / originalFactor;
 };
 
 /**
- * Calculates the virtual zoom center for the current offset and zoom factor
- * (used for reverse zoom)
- * @return {Object} the current zoom center
+ * Scales the zoom factor relative to current state
+ *
+ * @param scale
+ * @return the actual scale (can differ because of max min zoom factor)
  */
-export const getCurrentPinchCenter = (el: EventTarget, zoomFactor: number, offset: Object): Object => {
-  const length = getParentX(el) * zoomFactor;
-  const offsetLeft = offset.x;
-  const offsetRight = length - offsetLeft - getParentX(el);
-  const widthOffsetRatio = offsetLeft / offsetRight;
-  let centerX = (widthOffsetRatio * getParentX(el)) / (widthOffsetRatio + 1);
-
-  // the same for the zoomcenter y
-  const height = getParentY(el) * zoomFactor;
-  const offsetTop = offset.y;
-  const offsetBottom = height - offsetTop - getParentY(el);
-  const heightOffsetRatio = offsetTop / offsetBottom;
-  let centerY = (heightOffsetRatio * getParentY(el)) / (heightOffsetRatio + 1);
-
-  // prevents division by zero
-  if (offsetRight === 0) { centerX = getParentX(el); }
-  if (offsetBottom === 0) { centerY = getParentY(el); }
-
-  return {
-    x: centerX,
-    y: centerY,
-  };
+export const getZoomFactor = (scale: number, factor: number, opts: Object): Object => {
+  let zoomFactor = factor * scale;
+  const { maxScaleTimes, minScaleTimes } = opts;
+  return zoomFactor = Math.min(maxScaleTimes, Math.max(zoomFactor, minScaleTimes));
 };
 
 export const getTouchCenter = (touches: Array<Object>) => getVectorAvg(touches);
-
-/**
- * calcScale - Calculate the distance between where we start our pinch
- * to where we end it
- *
- * @param { Array } startTouch The starting point of our touch
- * @param { Array } endTouch The current point of our touch
- * @return { Number }
- */
-export const calcScale = (el: EventTarget, startTouch: Array<Object>, endTouch: Array<Object>): number => (
-  getDistance(getTouches(el, endTouch)) / getDistance(getTouches(el, startTouch))
-);
 
 export const calcNewScale = (to: number, lastScale: number = 1): number => (
   to / lastScale
