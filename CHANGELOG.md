@@ -8,6 +8,14 @@
 
 ### Releases
 
+### `0.6.0` — February 21, 2017
+
+###### BREAKING CHANGES
+
+- DOM node or css class that gets passed should now be wrapper instead of image
+
+### Releases
+
 ### `0.5.1` — February 13, 2017
 
 ###### CHANGES

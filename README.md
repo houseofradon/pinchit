@@ -45,9 +45,9 @@ bower install pinchit --save
 
 ```js
   import pinchit from 'pinchit';
-  var pinch = document.querySelectorAll('img');
+  var wrapper = document.querySelectorAll('.img-wrapper');
 
-  pinchit(pinch, {
+  pinchit(wrapper, {
       // options going here
   });
 ```
