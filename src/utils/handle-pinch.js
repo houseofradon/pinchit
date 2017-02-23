@@ -76,9 +76,8 @@ export const getScaleFactor = (scale: number, factor: number, opts: Object): Obj
  * @return the actual scale (can differ because of max min zoom factor)
  */
 export const getZoomFactor = (scale: number, factor: number, opts: Object): Object => {
-  let zoomFactor = factor * scale;
   const { maxScaleTimes, minScaleTimes } = opts;
-  return zoomFactor = Math.min(maxScaleTimes, Math.max(zoomFactor, minScaleTimes));
+  return Math.min(maxScaleTimes, Math.max(factor * scale, minScaleTimes));
 };
 
 export const getTouchCenter = (touches: Array<Object>) => getVectorAvg(touches);
