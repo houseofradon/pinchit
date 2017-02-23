@@ -174,11 +174,10 @@ var getScaleFactor = exports.getScaleFactor = function getScaleFactor(scale, fac
  * @return the actual scale (can differ because of max min zoom factor)
  */
 var getZoomFactor = exports.getZoomFactor = function getZoomFactor(scale, factor, opts) {
-  var zoomFactor = factor * scale;
   var maxScaleTimes = opts.maxScaleTimes,
       minScaleTimes = opts.minScaleTimes;
 
-  return zoomFactor = Math.min(maxScaleTimes, Math.max(zoomFactor, minScaleTimes));
+  return Math.min(maxScaleTimes, Math.max(factor * scale, minScaleTimes));
 };
 
 var getTouchCenter = exports.getTouchCenter = function getTouchCenter(touches) {
@@ -305,6 +304,10 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 var first = function first(items) {
   return items[0];
+};
+
+var setTarget = function setTarget(el, opts) {
+  return el.querySelector(opts.target ? 'img' + opts.target : 'img');
 };
 
 var pinchIt = function pinchIt(targets) {
@@ -460,13 +463,16 @@ var pinchIt = function pinchIt(targets) {
    * @return { Void }
    */
   var reset = function reset() {
-    if (!element) return;
-    var snapBackSpeed = opts.snapBackSpeed,
-        easing = opts.easing;
+    var opt = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
-    console.log('reset?');
-    var image = element.querySelector('img');
-    console.log(image);
+    if (!element) return;
+    var image = setTarget(element, opts);
+    if (!image) return;
+
+    var _Object$assign = Object.assign({}, opts, opt),
+        snapBackSpeed = _Object$assign.snapBackSpeed,
+        easing = _Object$assign.easing;
+
     (0, _handleElement2.default)(element, image, 1, { x: 0, y: 0 }, snapBackSpeed, easing);
     resetGlobals();
   };
@@ -477,9 +483,11 @@ var pinchIt = function pinchIt(targets) {
    * @return { Void }
    */
   var destroy = function destroy() {
+    var opt = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+
     dispatchPinchEvent('destroy', 'before', {});
     if (!element) return;
-    reset();
+    reset(opt);
     // remove event listeners
     detachhEvents(element);
     element = null;
@@ -511,7 +519,6 @@ var pinchIt = function pinchIt(targets) {
     }
 
     if (element) {
-      console.log(element);
       attachEvents(element);
     }
 
@@ -796,7 +803,7 @@ var detectDoubleTap = exports.detectDoubleTap = function detectDoubleTap(e) {
   }
 
   if (time - lastTouchStart < 300) {
-    cancelEvent(event);
+    cancelEvent(e);
     return true;
   }
 
