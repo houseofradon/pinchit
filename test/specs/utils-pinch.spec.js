@@ -1,6 +1,6 @@
 /* globals it, describe, before, beforeEach, expect, sinon, fixture */
 
-import { isWithin, getOffset, getParentX, getParentY, getInitialScale, scaleFactor, getTouchCenter, calcScale, calcNewScale } from '../../src/utils/handle-pinch';
+import { isWithin, addOffset, getX, getY, getInitialScale, getScaleFactor, getTouchCenter, calcNewScale } from '../../src/utils/handle-pinch';
 import defaults from '../../src/defaults';
 
 let element;
@@ -58,36 +58,34 @@ describe('pinch helpers', () => {
 
   describe('isWithin()', () => {
     it('has to be a function', () => {
-      expect(typeof getOffset).to.eql('function');
+      expect(typeof addOffset).to.eql('function');
     });
 
     it('should return combined offsets', () => {
       const oldOffset = { x: 10, y: 20 };
       const newOffset = { x: 20, y: 10 };
       const combinedOffset = { x: 30, y: 30 };
-      expect(getOffset(oldOffset, newOffset)).to.deep.eql(combinedOffset);
+      expect(addOffset(oldOffset, newOffset)).to.deep.eql(combinedOffset);
     });
   });
 
-  describe('getParentX()', () => {
+  describe('getX()', () => {
     it('has to be a function', () => {
-      expect(typeof getParentX).to.eql('function');
+      expect(typeof getX).to.eql('function');
     });
 
     it('should return parent x offsetWidth', () => {
-      const img = element.querySelector('img');
-      expect(getParentX(img)).to.eql(200);
+      expect(getX(element)).to.eql(1);
     });
   });
 
-  describe('getParentY()', () => {
+  describe('getY()', () => {
     it('has to be a function', () => {
-      expect(typeof getParentY).to.eql('function');
+      expect(typeof getY).to.eql('function');
     });
 
     it('should return parent x offsetWidth', () => {
-      const img = element.querySelector('img');
-      expect(getParentY(img)).to.eql(100);
+      expect(getY(element)).to.eql(1);
     });
   });
 
@@ -98,27 +96,21 @@ describe('pinch helpers', () => {
 
     it('should return 1 if parent node and parent node is the same', () => {
       const img = element.querySelector('img');
-      expect(getInitialScale(img)).to.eql(1);
-    });
-
-    it('should return 1 if we cant find element', () => {
-      expect(getInitialScale()).to.eql(1);
+      expect(getInitialScale(element, img)).to.eql(1);
     });
   });
 
-  describe('scaleFactor()', () => {
+  describe('getScaleFactor()', () => {
     it('has to be a function', () => {
-      expect(typeof scaleFactor).to.eql('function');
+      expect(typeof getScaleFactor).to.eql('function');
     });
 
     it('should return a new scale and and a new zoomFactor', () => {
-      const output = { zoomFactor: 6, scale: 2 };
-      expect(scaleFactor(2, 3, defaults)).to.deep.eql(output);
+      expect(getScaleFactor(2, 3, defaults)).to.deep.eql(1.3333333333333333);
     });
 
     it('should return a new scale and and a new zoomFactor', () => {
-      const output = { zoomFactor: 1, scale: 1 };
-      expect(scaleFactor(1, 1, defaults)).to.deep.eql(output);
+      expect(getScaleFactor(1, 1, defaults)).to.deep.eql(1);
     });
   });
 
@@ -143,27 +135,6 @@ describe('pinch helpers', () => {
       const { thirdTouch } = mochGesture();
       const output = { x: 30, y: 30 };
       expect(getTouchCenter(thirdTouch)).to.eql(output);
-    });
-  });
-
-  describe('calcScale()', () => {
-    it('has to be a function', () => {
-      expect(typeof calcScale).to.eql('function');
-    });
-
-    it('should return scale number between two touch points', () => {
-      const { firstTouch } = mochGesture();
-      expect(calcScale(firstTouch, firstTouch)).to.eql(1);
-    });
-
-    it('should return scale number between two touch points', () => {
-      const { firstTouch, secondTouch } = mochGesture();
-      expect(calcScale(firstTouch, secondTouch)).to.eql(1);
-    });
-
-    it('should return scale number between two touch points', () => {
-      const { firstTouch, thirdTouch } = mochGesture();
-      expect(calcScale(firstTouch, thirdTouch)).to.eql(2);
     });
   });
 

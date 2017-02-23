@@ -67,6 +67,7 @@ module.exports = (config) => {
       'karma-chai',
       'karma-sinon-chai',
       'karma-sinon',
+      'karma-coveralls',
       'karma-sourcemap-loader',
       'karma-fixture',
       'karma-html2js-preprocessor',
@@ -77,7 +78,7 @@ module.exports = (config) => {
     // test results reporter to use
     // possible values: 'dots', 'progress'
     // available reporters: https://npmjs.org/browse/keyword/karma-reporter
-    reporters: process.env.TRAVIS ? ['progress'] : ['progress', 'coverage'],
+    reporters: process.env.TRAVIS ? ['progress', 'coverage', 'coveralls'] : ['progress', 'coverage'],
 
     coverageReporter: {
       dir: 'test',

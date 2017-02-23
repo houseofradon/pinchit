@@ -51,14 +51,13 @@ describe('touch pinch events', () => {
   describe('pinch', () => {
     describe('onTouchstart', () => {
       it('pinchit should set style to element', (done) => {
-        const node = element.querySelector('img');
-        pinchit(node);
-        touchEvent('touchstart', node, 0, coordSequence[0])
-        .then(() => touchEvent('touchmove', node, 100, coordSequence[1]))
-        .then(() => touchEvent('touchmove', node, 200, coordSequence[2]))
-        .then(() => touchEvent('touchend', node, 0, coordSequence[2]))
+        pinchit(element);
+        touchEvent('touchstart', element, 0, coordSequence[0])
+        .then(() => touchEvent('touchmove', element, 100, coordSequence[1]))
+        .then(() => touchEvent('touchmove', element, 200, coordSequence[2]))
+        .then(() => touchEvent('touchend', element, 0, coordSequence[2]))
         .then(() => {
-          console.log(node.style);
+          console.log(element.style);
           console.log('done');
           done();
         });
