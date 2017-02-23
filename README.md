@@ -31,9 +31,6 @@ bower install pinchit --save
 ### Prerequisited css
 
 ```css
-/**
-
- */
 .img-wrapper {
   overflow: hidden;
 }
