@@ -1,5 +1,8 @@
 ## Pinch it
 
+[![Build Status](https://travis-ci.org/Knape/pinchit.svg?branch=master)](https://travis-ci.org/Knape/pinchit)
+[![Coverage Status](https://coveralls.io/repos/github/Knape/pinchit/badge.svg?branch=master)](https://coveralls.io/github/Knape/pinchit?branch=master)
+
 ### Description
 Zoom images without dependencies
 
