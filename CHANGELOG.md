@@ -2,8 +2,6 @@
 
 ### In progress
 
-- Zoom out on double tab when zoomed in
-
 ---
 
 ### Releases
@@ -12,7 +10,7 @@
 
 ###### CHANGES
 
-- fixes referenceError
+- Zoom out on double tab when zoomed in
 
 ### `0.6.0` — February 21, 2017
 
