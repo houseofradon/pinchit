@@ -8,6 +8,12 @@
 
 ### Releases
 
+### `0.6.1` — February 23, 2017
+
+###### CHANGES
+
+- fixes referenceError
+
 ### `0.6.0` — February 21, 2017
 
 ###### BREAKING CHANGES
