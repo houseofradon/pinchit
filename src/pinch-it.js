@@ -9,6 +9,10 @@ import defaults from './defaults';
 
 const first = (items: Array<Object>) => items[0];
 
+const setTarget = (el, opts) => (
+  el.querySelector(opts.target ? `img${opts.target}` : 'img')
+);
+
 const pinchIt = (targets: string | Object, options: Object = {}) => {
   // private variable cache
   let element = null;
@@ -153,12 +157,11 @@ const pinchIt = (targets: string | Object, options: Object = {}) => {
    * @param { String } easing
    * @return { Void }
    */
-  const reset = (): void => {
+  const reset = (opt: Object = {}): void => {
     if (!element) return;
-    const { snapBackSpeed, easing } = opts;
-    console.log('reset?');
-    const image = element.querySelector('img');
-    console.log(image);
+    const image = setTarget(element, opts);
+    if (!image) return;
+    const { snapBackSpeed, easing } = Object.assign({}, opts, opt);
     scaleElement(element, image, 1, { x: 0, y: 0 }, snapBackSpeed, easing);
     resetGlobals();
   };
@@ -168,10 +171,10 @@ const pinchIt = (targets: string | Object, options: Object = {}) => {
    * destroy function: called to gracefully destroy the lory instance
    * @return { Void }
    */
-  const destroy = (): void => {
+  const destroy = (opt: Object = {}): void => {
     dispatchPinchEvent('destroy', 'before', {});
     if (!element) return;
-    reset();
+    reset(opt);
     // remove event listeners
     detachhEvents(element);
     element = null;
@@ -203,7 +206,6 @@ const pinchIt = (targets: string | Object, options: Object = {}) => {
     }
 
     if (element) {
-      console.log(element);
       attachEvents(element);
     }
 

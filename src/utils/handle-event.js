@@ -36,7 +36,7 @@ export const detectDoubleTap = (e: TouchEvent): boolean => {
   }
 
   if (time - lastTouchStart < 300) {
-    cancelEvent(event);
+    cancelEvent(e);
     return true;
   }
 
