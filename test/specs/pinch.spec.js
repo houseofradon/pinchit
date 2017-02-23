@@ -2,41 +2,9 @@
 /* eslint no-unused-expressions: 0 */
 
 import pinchit from '../../src/';
+import {exportProps, touchEvent, createPinch} from './utils';
 
 let element;
-const coordSequence = [
-  [
-    { pageX: 0, pageY: 10},
-    { pageX: 10, pageY: 10}
-  ],
-  [
-    { pageX: 10, pageY: 20},
-    { pageX: 20, pageY: 20}
-  ],
-  [
-    { pageX: 20, pageY: 30},
-    { pageX: 40, pageY: 30}
-  ]
-];
-
-const touchEvent = (eventType, el, timeout, coords) => {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      const event = document.createEvent('Event');
-      const touches = coords.map((coord, i) => Object.assign(coord, {
-        target: el,
-        identifier: i,
-      }));
-
-      event.initEvent(eventType, true, true);
-      event.touches = touches;
-      event.targetTouches = touches;
-      event.changedTouches = touches;
-      el.dispatchEvent(event);
-      resolve(el);
-    }, timeout);
-  });
-};
 
 describe('touch pinch events', () => {
   before(() => {
@@ -49,32 +17,33 @@ describe('touch pinch events', () => {
   });
 
   describe('pinch', () => {
-    describe('onTouchstart', () => {
-      it('pinchit should set style to element', (done) => {
-        pinchit(element);
-        touchEvent('touchstart', element, 0, coordSequence[0])
-        .then(() => touchEvent('touchmove', element, 100, coordSequence[1]))
-        .then(() => touchEvent('touchmove', element, 200, coordSequence[2]))
-        .then(() => touchEvent('touchend', element, 0, coordSequence[2]))
-        .then(() => {
-          console.log(element.style);
-          console.log('done');
-          done();
-        });
+    it('pinchit should set style to element', (done) => {
+      const pinch = pinchit(element);
+      const basePinch = createPinch(element, 0.5, 0.5);
+      touchEvent('touchstart', element, 100, basePinch(20))
+      .then(() => touchEvent('touchmove', element, 100, basePinch(21)))
+      .then(() => touchEvent('touchmove', element, 100, basePinch(41)))
+      .then(() => touchEvent('touchend', element, 0, basePinch(41)))
+      .then(() => {
+        const {translate, scale} = exportProps(pinch.element);
+        expect(translate).to.deep.eql([-105, -52.5]);
+        expect(scale).to.deep.eql([2.05, 2.05, 1]);
+        done();
       });
-      it('pinchit should fire events', () => {});
     });
 
-    describe('onTouchmove', () => {
-      it('pinchit should set style to element', () => {});
-      it('pinchit should fire events', () => {});
-    });
-
-    describe('onTouchend', () => {
-      it('pinchit should set style to element', () => {});
-      it('should return if smaller then min value', () => {});
-      it('should return if smaller then max value', () => {});
-      it('pinchit should fire events', () => {});
+    it('pinchit should set style to element and return to max if we pass it', (done) => {
+      const pinch = pinchit(element);
+      const basePinch = createPinch(element, 0.5, 0.5);
+      touchEvent('touchstart', element, 100, basePinch(20))
+      .then(() => touchEvent('touchmove', element, 100, basePinch(21)))
+      .then(() => touchEvent('touchmove', element, 100, basePinch(141)))
+      .then(() => touchEvent('touchend', element, 0, basePinch(141)))
+      .then(() => {
+        const {translate, scale} = exportProps(pinch.element);
+        expect(scale).to.deep.eql([3, 3, 1]);
+        done();
+      });
     });
   });
 });

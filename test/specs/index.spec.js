@@ -2,6 +2,7 @@
 /* eslint no-unused-expressions: 0 */
 
 import pinchit from '../../src/';
+import {exportProps, touchEvent, createPinch} from './utils';
 
 let element;
 
@@ -40,8 +41,7 @@ describe('pinchit()', () => {
     });
 
     it('allows to pass an node as first argument', () => {
-      const node = element.querySelector('img');
-      pinchit(node);
+      pinchit(element);
       expect(console.warn).not.to.have.been.called;
     });
 
@@ -51,11 +51,67 @@ describe('pinchit()', () => {
     });
   });
 
+  describe('methods', () => {
+    it('should exist', () => {
+      const pinch = pinchit(element);
+      expect(typeof pinch.setup).to.eql('function');
+      expect(typeof pinch.destroy).to.eql('function');
+      expect(typeof pinch.reset).to.eql('function');
+    });
+  });
+
   describe('.reset()', () => {
-    it('has to be a function', () => {});
+    it('should be able to reset', (done) => {
+      const pinch = pinchit(element);
+      const basePinch = createPinch(element, 0.5, 0.5);
+      touchEvent('touchstart', element, 500, basePinch(20))
+      .then(() => touchEvent('touchmove', element, 200, basePinch(21)))
+      .then(() => touchEvent('touchmove', element, 200, basePinch(30)))
+      .then(() => {
+        const {translate, scale} = exportProps(pinch.element);
+        expect(translate).not.to.deep.eql([0, 0]);
+        expect(scale).not.to.deep.eql([1, 1, 1]);
+      })
+      .then(() => touchEvent('touchend', element, 500, basePinch(30)))
+      .then(() => {
+        pinch.reset();
+        const {translate, scale} = exportProps(pinch.element);
+        expect(translate).to.deep.eql([0, 0]);
+        expect(scale).to.deep.eql([1, 1, 1]);
+        done();
+      });
+    });
   });
 
   describe('.destroy()', () => {
-    it('has to be a function', () => {});
+    it('should be able to destroy', () => {
+      const pinch = pinchit(element);
+      pinch.destroy();
+      const {translate, scale} = exportProps(pinch.element);
+      expect(translate).to.deep.eql([0, 0]);
+      expect(scale).to.deep.eql([1, 1, 1]);
+    });
+
+    it('should be able to destroy and reset to base zoom and offset', (done) => {
+      const pinch = pinchit(element);
+      const basePinch = createPinch(element, 0.5, 0.5);
+      touchEvent('touchstart', element, 500, basePinch(20))
+      .then(() => touchEvent('touchmove', element, 200, basePinch(21)))
+      .then(() => touchEvent('touchmove', element, 200, basePinch(30)))
+      .then(() => {
+        const {translate, scale} = exportProps(pinch.element);
+        console.log(translate, scale);
+        expect(translate).not.to.deep.eql([0, 0]);
+        expect(scale).not.to.deep.eql([1, 1, 1]);
+      })
+      .then(() => touchEvent('touchend', element, 500, basePinch(30)))
+      .then(() => {
+        pinch.destroy();
+        const {translate, scale} = exportProps(pinch.element);
+        expect(translate).to.deep.eql([0, 0]);
+        expect(scale).to.deep.eql([1, 1, 1]);
+        done();
+      });
+    });
   });
 });
