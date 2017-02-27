@@ -29,7 +29,6 @@ describe('touch events', () => {
         .then(() => touchEvent('touchend', element, 0, basePinch(60, true)))
         .then(() => {
           const {translate, scale} = exportProps(pinch.element);
-          console.log(translate, scale);
           // expect(translate).to.deep.eql([-105, -52.5]);
           expect(scale).to.deep.eql([2.05, 2.05, 1]);
           done();

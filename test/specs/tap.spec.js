@@ -17,7 +17,7 @@ describe('touch events', () => {
   });
 
   describe('tap', () => {
-    it('pinchit should reset on doubletap', (done) => {
+    it('pinchit should reset on doubletap if we are zoomed in', (done) => {
       const pinch = pinchit(element);
       const basePinch = createPinch(element, 0.5, 0.5);
       touchEvent('touchstart', element, 0, basePinch(20))
@@ -27,7 +27,6 @@ describe('touch events', () => {
       .then(() => touchEvent('touchstart', element, 50, basePinch(60, true)))
       .then(() => {
         const {translate, scale} = exportProps(pinch.element);
-        console.log(translate, scale);
         // expect(translate).to.deep.eql([-105, -52.5]);
         expect(scale).to.deep.eql([1, 1, 1]);
         done();

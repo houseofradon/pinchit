@@ -52,18 +52,18 @@ export const exportProps = (element, index = 1) => {
 
 export const touchEvent = (eventType, el, timeout, coords) => {
   return new Promise((resolve) => {
-    setTimeout(() => {
-      const event = document.createEvent('Event');
-      const touches = coords.map((coord, i) => Object.assign(coord, {
-        target: el,
-        identifier: i,
-      }));
+    const event = document.createEvent('Event');
+    const touches = coords.map((coord, i) => Object.assign(coord, {
+      target: el,
+      identifier: i,
+    }));
 
-      event.initEvent(eventType, true, true);
-      event.touches = touches;
-      event.targetTouches = touches;
-      event.changedTouches = touches;
-      el.dispatchEvent(event);
+    event.initEvent(eventType, true, true);
+    event.touches = touches;
+    event.targetTouches = touches;
+    event.changedTouches = touches;
+    el.dispatchEvent(event);
+    setTimeout(() => {
       resolve(el);
     }, timeout);
   });

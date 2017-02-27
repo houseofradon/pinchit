@@ -100,7 +100,6 @@ describe('pinchit()', () => {
       .then(() => touchEvent('touchmove', element, 200, basePinch(30)))
       .then(() => {
         const {translate, scale} = exportProps(pinch.element);
-        console.log(translate, scale);
         expect(translate).not.to.deep.eql([0, 0]);
         expect(scale).not.to.deep.eql([1, 1, 1]);
       })
