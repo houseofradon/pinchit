@@ -62,11 +62,9 @@ export const getInitialScale = (el: EventTarget, image: HTMLElement): number => 
  * @return the actual scale (can differ because of max min zoom factor)
  */
 export const getScaleFactor = (scale: number, factor: number, opts: Object): Object => {
-  const originalFactor = factor;
-  let zoomFactor = factor * scale;
   const { maxScaleTimes, minScaleTimes } = opts;
-  zoomFactor = Math.min(maxScaleTimes, Math.max(zoomFactor, minScaleTimes));
-  return zoomFactor / originalFactor;
+  const zoomFactor = Math.min(maxScaleTimes, Math.max(factor * scale, minScaleTimes));
+  return zoomFactor / factor;
 };
 
 /**

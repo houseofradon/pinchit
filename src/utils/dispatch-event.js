@@ -18,19 +18,8 @@ const eventDispatcher = () => {
   };
 
   /**
-   * Deregister a handler for event.
+   * dispatch an event for a handler.
    */
-  const off = (eventName: string, handler: Function) => {
-    if (events[eventName]) {
-      for (let i = 0; i < events[eventName].length; i += 1) {
-        if (events[eventName][i] === handler) {
-          events[eventName].splice(i, 1);
-          break;
-        }
-      }
-    }
-  };
-
   const dispatch = (eventName: string, data: Object) => {
     if (events[eventName]) {
       events[eventName].forEach((fn) => {
@@ -41,7 +30,6 @@ const eventDispatcher = () => {
 
   return {
     on,
-    off,
     dispatch,
   };
 };
