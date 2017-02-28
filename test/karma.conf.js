@@ -21,7 +21,7 @@ module.exports = (config) => {
     files: [{
       pattern: 'test/specs/*.js',
       included: true,
-      watched: !process.env.TRAVIS
+      watched: !process.env.TRAVIS || process.env.NODE_ENV !== 'production'
     }, {
       pattern: 'test/*.html'
     }],
@@ -116,6 +116,6 @@ module.exports = (config) => {
 
     // Continuous Integration mode
     // if true, Karma captures browsers, runs the tests and exits
-    singleRun: process.env.TRAVIS,
+    singleRun: process.env.TRAVIS || process.env.NODE_ENV === 'production',
   });
 };
