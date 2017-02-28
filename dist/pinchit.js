@@ -158,13 +158,11 @@ var getInitialScale = exports.getInitialScale = function getInitialScale(el, ima
  * @return the actual scale (can differ because of max min zoom factor)
  */
 var getScaleFactor = exports.getScaleFactor = function getScaleFactor(scale, factor, opts) {
-  var originalFactor = factor;
-  var zoomFactor = factor * scale;
   var maxScaleTimes = opts.maxScaleTimes,
       minScaleTimes = opts.minScaleTimes;
 
-  zoomFactor = Math.min(maxScaleTimes, Math.max(zoomFactor, minScaleTimes));
-  return zoomFactor / originalFactor;
+  var zoomFactor = Math.min(maxScaleTimes, Math.max(factor * scale, minScaleTimes));
+  return zoomFactor / factor;
 };
 
 /**
@@ -404,8 +402,8 @@ var pinchIt = function pinchIt(targets) {
       var touchCenter = (0, _handlePinch.getTouchCenter)((0, _handleEvent.getTouches)(e.currentTarget, Array.from(e.touches)));
       var newScale = (0, _handleEvent.calcScale)(e.currentTarget, startTouches, Array.from(e.touches));
       var scaleValue = (0, _handlePinch.calcNewScale)(newScale, lastScale);
-
       var scale = (0, _handlePinch.getScaleFactor)(scaleValue, zoomFactor, opts);
+
       zoomFactor = (0, _handlePinch.getZoomFactor)(scaleValue, zoomFactor, opts);
 
       offset = (0, _handlePinch.addOffset)(offset, {
@@ -427,18 +425,26 @@ var pinchIt = function pinchIt(targets) {
   var onTouchend = function onTouchend(e) {
     dispatchPinchEvent('touchend', 'before', e);
 
-    lastDragPosition = false;
-    lastZoomCenter = false;
-    lastScale = 1;
     if (zoomFactor) {
       if (!(0, _handlePinch.isWithin)(zoomFactor, opts)) {
         var image = e.currentTarget.querySelector('img');
         var isLessThan = (0, _handlePinch.getInitialScale)(e.target, image) * zoomFactor < opts.minScale;
+        var lastZoom = zoomFactor;
         zoomFactor = isLessThan ? opts.minScale : opts.maxScale;
+        var scaleValue = (0, _handlePinch.calcNewScale)(zoomFactor, lastZoom);
+        var scale = (0, _handlePinch.getScaleFactor)(scaleValue, zoomFactor, opts);
+        offset = (0, _handlePinch.addOffset)(offset, {
+          x: (scale - 1) * (lastZoomCenter.x + offset.x),
+          y: (scale - 1) * (lastZoomCenter.y + offset.y)
+        });
         offset = (0, _handleDrag.sanitizeOffset)(e.target, offset, zoomFactor);
         (0, _handleElement2.default)(e.target, image, zoomFactor, offset, opts.snapBackSpeed, opts.ease);
       }
     }
+
+    lastScale = 1;
+    lastDragPosition = false;
+    lastZoomCenter = false;
 
     dispatchPinchEvent('touchend', 'after', e);
   };
@@ -630,19 +636,8 @@ var eventDispatcher = function eventDispatcher() {
   };
 
   /**
-   * Deregister a handler for event.
+   * dispatch an event for a handler.
    */
-  var off = function off(eventName, handler) {
-    if (events[eventName]) {
-      for (var i = 0; i < events[eventName].length; i += 1) {
-        if (events[eventName][i] === handler) {
-          events[eventName].splice(i, 1);
-          break;
-        }
-      }
-    }
-  };
-
   var dispatch = function dispatch(eventName, data) {
     if (events[eventName]) {
       events[eventName].forEach(function (fn) {
@@ -653,7 +648,6 @@ var eventDispatcher = function eventDispatcher() {
 
   return {
     on: on,
-    off: off,
     dispatch: dispatch
   };
 };
