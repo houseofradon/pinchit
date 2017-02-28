@@ -6,6 +6,14 @@
 
 ### Releases
 
+### `0.6.2` — February 23, 2017
+
+###### CHANGES
+
+- Fixes bounce back bug
+
+### Releases
+
 ### `0.6.1` — February 23, 2017
 
 ###### CHANGES
