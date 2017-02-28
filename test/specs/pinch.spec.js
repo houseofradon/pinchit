@@ -10,6 +10,7 @@ import { drag } from '../../src/utils/handle-drag';
 import {exportProps, touchEvent, createPinch} from './utils';
 
 let element;
+let img;
 
 describe('touch pinch events', () => {
   before(() => {
@@ -19,6 +20,7 @@ describe('touch pinch events', () => {
   beforeEach(() => {
     fixture.load('test.html');
     element = fixture.el.querySelector('.wrapper');
+    img = fixture.el.querySelector('.wrapper img');
   });
 
   describe('touchCenter', () => {
@@ -204,32 +206,91 @@ describe('touch pinch events', () => {
       });
     });
 
+    it('pinchit should set style to element when zooming', (done) => {
+      const pinch = pinchit(element);
+      const basePinch = createPinch(element, 0.5, 0.5);
+      touchEvent('touchstart', element, 100, basePinch(20))
+      .then(() => touchEvent('touchmove', element, 100, basePinch(40)))
+      .then(() => touchEvent('touchmove', element, 100, basePinch(30)))
+      .then(() => {
+        // console.log('scale down');
+        done();
+      });
+    });
+
     it('pinchit should set style to element and return to max if we pass it', (done) => {
       const pinch = pinchit(element);
       const basePinch = createPinch(element, 0.5, 0.5);
-      console.log(pinch.element);
-      console.log(element.getBoundingClientRect().width);
-      console.log(element.querySelector('img').getBoundingClientRect().width);
-      touchEvent('touchstart', element, 100, basePinch(20))
-      .then(() => touchEvent('touchmove', element, 100, basePinch(21)))
-      .then(() => touchEvent('touchmove', element, 100, basePinch(141)))
+      touchEvent('touchstart', img, 100, basePinch(20))
+      // .then(() => touchEvent('touchmove', element, 100, basePinch(21)))
+      .then(() => touchEvent('touchmove', img, 100, basePinch(100)))
       .then(() => {
+        // we should still be in center of the image but pinched in
         const {translate, scale} = exportProps(pinch.element);
-        expect(element.querySelector('img').getBoundingClientRect().width).to.deep.eql(element.getBoundingClientRect().width * scale[0]);
+        expect(img.getBoundingClientRect().width).to.deep.eql(element.getBoundingClientRect().width * scale[0]);
         expect(scale).to.deep.eql([4, 4, 1]);
-        return;
+        expect(translate).to.deep.eql([-300, -150]);
+        expect(element.getBoundingClientRect().width).to.eql(200);
+        expect(img.getBoundingClientRect().width).to.eql(800);
+        return true;
       })
-      .then(() => touchEvent('touchend', element, 100, basePinch(141)))
+      .then(() => touchEvent('touchend', img, 100, basePinch(141)))
       .then(() => {
         setTimeout(() => {
           const {translate, scale} = exportProps(pinch.element);
-          console.log(pinch.element);
-          console.log(element.getBoundingClientRect().width);
-          console.log(element.querySelector('img').getBoundingClientRect().width);
           expect(scale).to.deep.eql([3, 3, 1]);
+          expect(translate).to.deep.eql([-200, -100]);
+          expect(element.getBoundingClientRect().width).to.eql(200);
+          expect(img.getBoundingClientRect().width).to.eql(600);
           done();
         }, 440);
+      });
+    });
 
+    it('pinchit should set style to element and return to max if we pass it', (done) => {
+      const pinch = pinchit(element);
+      const basePinch = createPinch(element, 0.5, 0.5);
+      touchEvent('touchstart', img, 100, basePinch(20))
+      // .then(() => touchEvent('touchmove', element, 100, basePinch(21)))
+      .then(() => touchEvent('touchmove', img, 100, basePinch(100)))
+      .then(() => {
+        // we should still be in center of the image but pinched in
+        const {translate, scale} = exportProps(pinch.element);
+        expect(element.querySelector('img').getBoundingClientRect().width).to.deep.eql(element.getBoundingClientRect().width * scale[0]);
+        expect(scale).to.deep.eql([4, 4, 1]);
+        expect(translate).to.deep.eql([-300, -150]);
+        expect(element.getBoundingClientRect().width).to.eql(200);
+        expect(element.querySelector('img').getBoundingClientRect().width).to.eql(800);
+        return true;
+      })
+      .then(() => touchEvent('touchend', img, 100, basePinch(141)))
+      .then(() => {
+        setTimeout(() => {
+          const {translate, scale} = exportProps(pinch.element);
+          expect(scale).to.deep.eql([3, 3, 1]);
+          expect(translate).to.deep.eql([-200, -100]);
+          expect(element.getBoundingClientRect().width).to.eql(200);
+          expect(element.querySelector('img').getBoundingClientRect().width).to.eql(600);
+          done();
+        }, 440);
+      });
+    });
+
+    it('pinchit should set style to element and return to min if we pass it', (done) => {
+      const pinch = pinchit(element);
+      const basePinch = createPinch(element, 0.5, 0.5);
+      touchEvent('touchstart', img, 100, basePinch(60))
+      .then(() => touchEvent('touchmove', img, 100, basePinch(10)))
+      .then(() => touchEvent('touchend', img, 100, basePinch(10)))
+      .then(() => {
+        setTimeout(() => {
+          const {translate, scale} = exportProps(pinch.element);
+          expect(scale).to.deep.eql([1, 1, 1]);
+          expect(translate).to.deep.eql([0, 0]);
+          expect(element.getBoundingClientRect().width).to.eql(200);
+          expect(element.querySelector('img').getBoundingClientRect().width).to.eql(200);
+          done();
+        }, 440);
       });
     });
   });

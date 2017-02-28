@@ -99,8 +99,8 @@ const pinchIt = (targets: string | Object, options: Object = {}) => {
       const touchCenter = getTouchCenter(getTouches(e.currentTarget, Array.from(e.touches)));
       const newScale = calcScale(e.currentTarget, startTouches, Array.from(e.touches));
       const scaleValue = calcNewScale(newScale, lastScale);
-
       const scale = getScaleFactor(scaleValue, zoomFactor, opts);
+
       zoomFactor = getZoomFactor(scaleValue, zoomFactor, opts);
 
       offset = addOffset(offset, {
@@ -122,18 +122,26 @@ const pinchIt = (targets: string | Object, options: Object = {}) => {
   const onTouchend = (e: TouchEvent) => {
     dispatchPinchEvent('touchend', 'before', e);
 
-    lastDragPosition = false;
-    lastZoomCenter = false;
-    lastScale = 1;
     if (zoomFactor) {
       if (!isWithin(zoomFactor, opts)) {
         const image = e.currentTarget.querySelector('img');
         const isLessThan = (getInitialScale(e.target, image) * zoomFactor < opts.minScale);
+        const lastZoom = zoomFactor;
         zoomFactor = isLessThan ? opts.minScale : opts.maxScale;
+        const scaleValue = calcNewScale(zoomFactor, lastZoom);
+        const scale = getScaleFactor(scaleValue, zoomFactor, opts);
+        offset = addOffset(offset, {
+          x: (scale - 1) * (lastZoomCenter.x + offset.x),
+          y: (scale - 1) * (lastZoomCenter.y + offset.y)
+        });
         offset = sanitizeOffset(e.target, offset, zoomFactor);
         scaleElement(e.target, image, zoomFactor, offset, opts.snapBackSpeed, opts.ease);
       }
     }
+
+    lastScale = 1;
+    lastDragPosition = false;
+    lastZoomCenter = false;
 
     dispatchPinchEvent('touchend', 'after', e);
   };
