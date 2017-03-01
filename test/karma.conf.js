@@ -49,7 +49,7 @@ module.exports = (config) => {
       pattern: 'node_modules/babel-polyfill/dist/polyfill.js',
       included: true,
       watched: !process.env.TRAVIS || process.env.NODE_ENV !== 'production'
-    },{
+    }, {
       pattern: 'test/specs/*.js',
       included: true,
       watched: !process.env.TRAVIS || process.env.NODE_ENV !== 'production'
@@ -144,7 +144,7 @@ module.exports = (config) => {
 
     sauceLabs: {
       testName: 'pinchit',
-      public: true,
+      public: 'public',
     },
 
     phantomjsLauncher: {
