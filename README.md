@@ -42,7 +42,7 @@ bower install pinchit --save
 
 ```
 
-### Integration
+### Integration - ES6
 
 ```js
   import pinchit from 'pinchit';
@@ -52,6 +52,21 @@ bower install pinchit --save
       // options going here
   });
 ```
+
+### Integration - ES5
+
+```html
+<script src="/path/to/dist/pinchit.js" charset="utf-8"></script>
+```
+
+```js
+  var wrapper = document.querySelectorAll('.img-wrapper');
+
+  pinchit.default(wrapper, {
+      // options going here
+  });
+```
+
 
 ## Public API
 
@@ -78,6 +93,8 @@ bower install pinchit --save
 
 [![Sauce Test Status](https://saucelabs.com/browser-matrix/pinchit.svg)](https://saucelabs.com/u/pinchit)
 
+Note: If you attend to use this module with older browser its mandatory to polyfill both `Array.from` and `Object.assign`
+
 ## License
 
-[MIT](LICENSE). Copyright (c) 2016 Philip Knape.
+[MIT](LICENSE). Copyright (c) 2017 Philip Knape.

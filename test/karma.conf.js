@@ -46,6 +46,10 @@ module.exports = (config) => {
 
     // list of files / patterns to load in the browser
     files: [{
+      pattern: 'node_modules/babel-polyfill/dist/polyfill.js',
+      included: true,
+      watched: !process.env.TRAVIS || process.env.NODE_ENV !== 'production'
+    },{
       pattern: 'test/specs/*.js',
       included: true,
       watched: !process.env.TRAVIS || process.env.NODE_ENV !== 'production'
@@ -102,6 +106,7 @@ module.exports = (config) => {
       'karma-fixture',
       'karma-sauce-launcher',
       'karma-html2js-preprocessor',
+      'karma-babel-preprocessor',
       'karma-firefox-launcher',
       'karma-phantomjs-launcher',
       'istanbul-instrumenter-loader',

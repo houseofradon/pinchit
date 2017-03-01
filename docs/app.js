@@ -1,3 +1,5 @@
+import "babel-polyfill";
+
 import prism from 'prismjs';
 import 'prismjs/themes/prism.css';
 
