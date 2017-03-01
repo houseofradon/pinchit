@@ -1,7 +1,8 @@
 ## Pinch it
 
-[![Build Status](https://travis-ci.org/Knape/pinchit.svg?branch=master)](https://travis-ci.org/Knape/pinchit)
-[![Coverage Status](https://coveralls.io/repos/github/Knape/pinchit/badge.svg?branch=master)](https://coveralls.io/github/Knape/pinchit?branch=master)
+[![Build Status](https://travis-ci.org/houseofradon/pinchit.svg?branch=master)](https://travis-ci.org/Knape/pinchit)
+[![Coverage Status](https://coveralls.io/repos/github/houseofradon/pinchit/badge.svg?branch=master)](https://coveralls.io/github/Knape/pinchit?branch=master)
+[![Sauce Test Status](https://saucelabs.com/buildstatus/pinchit)](https://saucelabs.com/u/pinchit)
 
 ### Description
 Zoom images without dependencies
@@ -54,51 +55,28 @@ bower install pinchit --save
 
 ## Public API
 
-<table>
-  <tr>
-    <td>setup</td>
-    <td>Binds eventlisteners, merging default and user options, setup the pinch based on DOM (called once during initialisation). Call setup if DOM or user options have changed or eventlisteners needs to be rebinded.</td>
-  </tr>
-  <tr>
-    <td>reset</td>
-    <td>sets the pinch back to the starting position</td>
-  </tr>
-  <tr>
-    <td>destroy</td>
-    <td>destroys the pinchit instance by removing all pinch specific event listeners</td>
-  </tr>
-</table>
+|Name|Description|arguments|returns|
+|---|---|---|---|
+|setup|Binds eventlisteners, merging default and user options, setup the pinch based on DOM (called once during initialisation). Call setup if DOM or user options have changed or eventlisteners needs to be rebinded.|String or node|Void|
+|reset|Sets the pan back to the starting position or position passed to method|Object|void|
+|destroy|Resets and destroys the pinchit instance by removing all pinchit specific event listeners|Object|Void|
 
 ## Options
 
-<table>
-  <tr>
-    <td>baseScale</td>
-    <td>Default scale that will be set on element</td>
-  </tr>
-  <tr>
-    <td>maxScale</td>
-    <td>Max scale a node can reach</td>
-  </tr>
-  <tr>
-    <td>minScale</td>
-    <td>Min scale a node can reach</td>
-  </tr>
-  <tr>
-    <td>snapBackSpeed</td>
-    <td>time for the snapBack of the pinch if the node has reach above or below its pinch value</td>
-  </tr>
-  <tr>
-    <td>ease</td>
-    <td>default easing method</td>
-  </tr>
-</table>
+|Name|Description|Type|Default|
+|---|---|---|---|
+|target|If multiple images are inside wrapper, pass a target css selector to select the preferred image|String|null|
+|baseScale|Default scale that will be set on element|Number|1|
+|maxScale|Max scale a node can reach|Number|3|
+|maxScaleTimes|Max scale a node can reach before bouncing back to maxScale|Number|4|
+|maxScale|Mix scale a node can reach|Number|1|
+|maxScaleTimes|Mix scale a node can reach before bouncing back to mixScale|Number|0.8|
+|snapBackSpeed|Time for the snapBack of the pinch if the node has reach above or below its pinch value|Number|200|
+|ease|Default easing method|String|ease|
 
-### Browser Support
+## Browser support
 
-* Chrome
-* Safari
-* FireFox
+[![Sauce Test Status](https://saucelabs.com/browser-matrix/pinchit.svg)](https://saucelabs.com/u/pinchit)
 
 ## License
 
