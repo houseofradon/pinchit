@@ -1,10 +1,11 @@
-
 language: node_js
 node_js:
   - 6
+notifications:
+  email: false
 addons:
-  firefox: "latest"
-before_script:
-  - export DISPLAY=:99.0
-  - sh -e /etc/init.d/xvfb start
-  - sleep 3
+  sauce_connect:
+    username: pinchit
+env:
+  global:
+    secure: Qnt+jsr7f8FkoavBwMAoWEN6vkyUGyzkJsQyIWgqWNhm96eE0P36VH5h267lo5lbp1S8Q9InI7EIxlxqb5GcQEQIW1m5Kd8gJX2dzVx1Yskdrx96mo5LuAOWpRzZ/yHv3R80SffL+PsRptWSOdqn6eA5jRc7MxwNKn+g5uU/BqEciDN+Gud2/45sviJHBmwqYGC8+sB3zcN1yfqmtAwTiNQfksFwo66D33uFKpGVqoc+LFcjHgQu8NHWycDLyYquWoOt1YseyvsEbdb0W+fhph/8RBArHu3TwdEfXrpib2fgI472E0HkvZ0UmbWKJLFc/nN7eiM5EfzeMTuNUzKrVKB98mjkmvRRbkviyZrv1CuNSeCXQie69vkKjJ8qTvB30R4OwtP/wey5+tPZABH0Omle3GfDtwdT5hfu1JijUUZYsa9ACuiO87SdE65ZmOcs5JxdGq9CZN5PDuY3iuegQ1pYv7NaavlwT0MC103terLcKkTt/RkyWCfdKFJD0MWPS5ewHXQk/8OQC1emZ87UsKCVMOVUs60l/d7GbZvwJamVGSkAne/Rq+HjhcwF/gzGwBIDAiKN58coZJOemlf3hMVN7fxI05gJuNfT0PA77NXHm1TKCIrfgr9p17qs2M1VxMFnDjYKG83guI9In1+vnHrn80Nm7VjCCrP/rijRmxQ=

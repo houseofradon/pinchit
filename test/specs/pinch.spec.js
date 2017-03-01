@@ -194,27 +194,20 @@ describe('touch pinch events', () => {
     it('pinchit should set style to element when zooming', (done) => {
       const pinch = pinchit(element);
       const basePinch = createPinch(element, 0.5, 0.5);
-      touchEvent('touchstart', element, 100, basePinch(20))
-      .then(() => touchEvent('touchmove', element, 100, basePinch(21)))
-      .then(() => touchEvent('touchmove', element, 100, basePinch(41)))
-      .then(() => touchEvent('touchend', element, 0, basePinch(41)))
+      touchEvent('touchstart', img, 100, basePinch(20))
+      .then(() => touchEvent('touchmove', img, 100, basePinch(20)))
+      .then(() => touchEvent('touchmove', img, 100, basePinch(40)))
+      .then(() => touchEvent('touchend', img, 0, basePinch(40)))
       .then(() => {
-        const {translate, scale} = exportProps(pinch.element);
-        expect(translate).to.deep.eql([-105, -52.5]);
-        expect(scale).to.deep.eql([2.05, 2.05, 1]);
-        done();
-      });
-    });
-
-    it('pinchit should set style to element when zooming', (done) => {
-      const pinch = pinchit(element);
-      const basePinch = createPinch(element, 0.5, 0.5);
-      touchEvent('touchstart', element, 100, basePinch(20))
-      .then(() => touchEvent('touchmove', element, 100, basePinch(40)))
-      .then(() => touchEvent('touchmove', element, 100, basePinch(30)))
-      .then(() => {
-        // console.log('scale down');
-        done();
+        setTimeout(() => {
+          const {translate, scale} = exportProps(pinch.element);
+          console.log(pinch.element);
+          console.log(translate);
+          console.log(scale);
+          expect(translate).to.deep.eql([-100, -50]);
+          expect(scale).to.deep.eql([2, 2, 1]);
+          done();
+        }, 440);
       });
     });
 
