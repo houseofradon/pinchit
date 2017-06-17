@@ -1,9 +1,13 @@
 language: node_js
 node_js:
-- 6
+- 7
 notifications:
   email: false
-env:
-  global:
-  - secure: Y9CT6oZr+GYj0QjZ3Ee2dUphubdNOibMsahG/FAxhU8SaGC9zfIu8nC7PsoItTws0dzP9CNPVyBYZM7ZGonM+jItQzZcZbkNly8eJHPhnj0nuyLh4zRtH0MYo+hNrrn4w8AKFYRGkWiqUBCgJ0xE1SXF9tlSE/LKsZjTn8Stb5FNHrmWmp65nkmK3I3xviwRLSI1+X7EbQF+nAsqK2IdyNPj48jrvcfhyv8Erf7K692KQMqeoEYZQBkWHJoVUC6Ho5xQpYYbJLenTt+LW2/F92G7eWb1vrPjJl239FYGwL+A/8gpIVJ3BX5FpKHbpCfKEgWsO/5Moedvm8vYVXaDmC6Tsq1Ry416/U7X+fpvvaASNBxyH7/q8crW9TznQLUwP7opKAkA1NejcAQVzxaBP370FxigjwmoA1tT512jgX1zqdsKxi8qPUHS4zhVy4hHxgThIU0ELpR5mwioJSXRaO5/LWoTmtzBNTR72p/CXtqWSAvhMXoqUA4hvRw15c411gWZtLPtsHQZUvekt1+2i8Pvz1A0dn8cFlyzxKue/c0i1c9Yjinxr0VY2a7kfPlPuJk6jMhy8pdr/NpcklF4RLghkTO50CFbi4t2+SDA4TOBWfgzi9E7l4t2Ct7ZQhsSNO+eNTcD/b/QvrP/nmfjbH+EQ5tshYzLejIm4NjujJ4=
-  - secure: qeqVDlDNtv9VTOQkHldOufz0w1UQPq+AcKsUf81eO8dVq5PJNetxpgtGh6m9GtNK9ieAIvUlnJR3E2hzyrL+1Pkwxn6MT88zPvMlCiF0kjdt2DdMBkuca+kA211BNyzJm7SipmgB9btBFSArJtSjXkfWFhCiXmcjaFMVgMGfK4ecZ1rHrKiyBNqMy3AXEJdFbdcUslrpHb4BcWRkFh+TTT96OfMLDJaoQAWNXT/e9gwMkDJ0MMxrAMij2WnJOx/m+z5qHuR7DhJifmVyMz1UnI6hOBe95g0VKV263X/4gxjowCjbIQPIvf7ZBe6gpPfIFR9F/WLTxArBMvVbOz6RFvRyy5PTrFM7DEslRYmQaWlUqORClxUXHK5TZZzMbJ26pDEwwc97Og+mzkHUM78o696tY5ksHqs5lBFHnQEHrlExD/EvTMDqwI1i0aPzFaJSIJdc45amzHfldyd/WB1IxqZiKY8UMcBXH8CMSAt+GhclA7uvF5OVR+71okhjC0Ufqd0RAJS7iYdYmZgOwUbZ6MYLhZqdVh8Si8vT8DoFrgux/266YFYG3ZVM5udLtuHvQNFAXQQfq8KjltBpN45PK6Z0LrDoGXGF6HvWocZPmtmTz1yNPvx2pF9ztruJSBfvlXSVKBcrs6ujMsWfwBePSliK+hFARKossXQGt++V5BI=
+addons:
+  firefox: "49.0"
+before_install:
+  - npm install -g npm@latest
+before_script:
+  - export DISPLAY=:99.0
+  - sh -e /etc/init.d/xvfb start
+script: "./node_modules/karma/bin/karma start test/karma.conf.js --browsers Firefox --single-run --no-auto-watch --capture-timeout 60000"
