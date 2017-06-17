@@ -24,8 +24,8 @@ const pinchIt = (targets: string | Object, options: Object = {}) => {
   let zoomFactor = 1;
 
   let offset = { x: 0, y: 0 };
-  let lastZoomCenter = false;
-  let lastDragPosition = false;
+  let lastZoomCenter: Object = {};
+  let lastDragPosition: Object = {};
 
   // Base configuration for the pinch instance
   const opts = {...defaults, ...options};
@@ -50,13 +50,11 @@ const pinchIt = (targets: string | Object, options: Object = {}) => {
     lastScale = 1;
     startTouches = null;
     zoomFactor = 1;
-    lastZoomCenter = false;
-
-    lastDragPosition = false;
+    lastZoomCenter = {};
+    lastDragPosition = {};
     offset = { x: 0, y: 0 };
   };
 
-  // event handling
   /**
    * Set scaling if we are using more then one finger
    * and captures our first punch point
@@ -67,14 +65,15 @@ const pinchIt = (targets: string | Object, options: Object = {}) => {
   const onTouchstart = (e: TouchEvent) => {
     dispatchPinchEvent('touchstart', 'before', e);
 
+    const { target, currentTarget } = e;
 
     scaling = (e.touches.length === 2);
     startTouches = Array.from(e.touches);
     lastScale = 1;
 
-    if (detectDoubleTap(e)) {
-      const image = e.currentTarget.querySelector('img');
-      scaleElement(e.target, image, 1, { x: 0, y: 0 }, opts.snapBackSpeed, opts.ease);
+    if (detectDoubleTap(e) && target instanceof HTMLElement && currentTarget instanceof HTMLElement) {
+      const image = currentTarget.querySelector('img');
+      scaleElement(target, image, 1, { x: 0, y: 0 }, opts.snapBackSpeed, opts.ease);
       resetGlobals();
     }
 
@@ -84,20 +83,22 @@ const pinchIt = (targets: string | Object, options: Object = {}) => {
   const onTouchmove = (e: TouchEvent) => {
     dispatchPinchEvent('touchmove', 'before', e);
 
+    const { currentTarget, target, touches } = e;
+
     if ((!scaling || !startTouches) && zoomFactor > 1) {
       cancelEvent(e);
 
-      const touch = first(getTouches(e.currentTarget, Array.from(e.touches)));
+      const touch = first(getTouches(currentTarget, Array.from(touches)));
       const dragOffset = drag(touch, lastDragPosition, offset, zoomFactor);
 
-      offset = sanitizeOffset(e.target, dragOffset, zoomFactor);
+      offset = sanitizeOffset(target, dragOffset, zoomFactor);
       lastDragPosition = touch;
     } else if (scaling && startTouches) {
       cancelEvent(e);
 
       // a relative scale factor is used
-      const touchCenter = getTouchCenter(getTouches(e.currentTarget, Array.from(e.touches)));
-      const newScale = calcScale(e.currentTarget, startTouches, Array.from(e.touches));
+      const touchCenter = getTouchCenter(getTouches(e.currentTarget, Array.from(touches)));
+      const newScale = calcScale(e.currentTarget, startTouches, Array.from(touches));
       const scaleValue = calcNewScale(newScale, lastScale);
       const scale = getScaleFactor(scaleValue, zoomFactor, opts);
 
@@ -113,8 +114,10 @@ const pinchIt = (targets: string | Object, options: Object = {}) => {
       lastZoomCenter = touchCenter;
     }
 
-    const image = e.currentTarget.querySelector('img');
-    scaleElement(e.target, image, zoomFactor, offset, 0, opts.ease);
+    if (target instanceof HTMLElement && currentTarget instanceof HTMLElement) {
+      const image = currentTarget.querySelector('img');
+      scaleElement(target, image, zoomFactor, offset, 0, opts.ease);
+    }
 
     dispatchPinchEvent('touchmove', 'after', e);
   };
@@ -122,26 +125,26 @@ const pinchIt = (targets: string | Object, options: Object = {}) => {
   const onTouchend = (e: TouchEvent) => {
     dispatchPinchEvent('touchend', 'before', e);
 
-    if (zoomFactor) {
-      if (!isWithin(zoomFactor, opts)) {
-        const image = e.currentTarget.querySelector('img');
-        const isLessThan = (getInitialScale(e.target, image) * zoomFactor < opts.minScale);
-        const lastZoom = zoomFactor;
-        zoomFactor = isLessThan ? opts.minScale : opts.maxScale;
-        const scaleValue = calcNewScale(zoomFactor, lastZoom);
-        const scale = getScaleFactor(scaleValue, zoomFactor, opts);
-        offset = addOffset(offset, {
-          x: (scale - 1) * (lastZoomCenter.x + offset.x),
-          y: (scale - 1) * (lastZoomCenter.y + offset.y)
-        });
-        offset = sanitizeOffset(e.target, offset, zoomFactor);
-        scaleElement(e.target, image, zoomFactor, offset, opts.snapBackSpeed, opts.ease);
-      }
+    const { target, currentTarget } = e;
+
+    if (zoomFactor && !isWithin(zoomFactor, opts) && currentTarget instanceof HTMLElement) {
+      const image = currentTarget.querySelector('img');
+      const isLessThan = (getInitialScale(target, image) * zoomFactor < opts.minScale);
+      const lastZoom = zoomFactor;
+      zoomFactor = isLessThan ? opts.minScale : opts.maxScale;
+      const scaleValue = calcNewScale(zoomFactor, lastZoom);
+      const scale = getScaleFactor(scaleValue, zoomFactor, opts);
+      offset = addOffset(offset, {
+        x: (scale - 1) * (lastZoomCenter.x + offset.x),
+        y: (scale - 1) * (lastZoomCenter.y + offset.y)
+      });
+      offset = sanitizeOffset(e.target, offset, zoomFactor);
+      scaleElement(target, image, zoomFactor, offset, opts.snapBackSpeed, opts.ease);
     }
 
     lastScale = 1;
-    lastDragPosition = false;
-    lastZoomCenter = false;
+    lastDragPosition = {};
+    lastZoomCenter = {};
 
     dispatchPinchEvent('touchend', 'after', e);
   };
@@ -152,7 +155,7 @@ const pinchIt = (targets: string | Object, options: Object = {}) => {
     el.addEventListener('touchend', onTouchend);
   };
 
-  const detachhEvents = (el: Object) => {
+  const detachhEvents = (el: HTMLElement) => {
     el.removeEventListener('touchstart', onTouchstart);
     el.removeEventListener('touchmove', onTouchmove);
     el.removeEventListener('touchend', onTouchend);
@@ -196,7 +199,7 @@ const pinchIt = (targets: string | Object, options: Object = {}) => {
    * @param { String, Object }
    * @return { Void }
    **/
-  const setup = (target: string | Object): void => {
+  const setup = (target: string | HTMLElement): void => {
     if (element) destroy();
     dispatchPinchEvent('init', 'before', {});
     // resolve target
